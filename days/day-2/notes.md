@@ -258,3 +258,75 @@ Result: 6/6 path mappings passed.
 ```
 
 Hour 4 狀態：**完成**。六個 Filesystem Paths 均已預測並實測。
+
+### Hour 5：SPA 與 `try_files`
+
+#### `try_files` 的執行方式
+
+```nginx
+try_files $uri $uri/ /index.html;
+```
+
+Nginx 依序檢查 `$uri` 與 `$uri/` 對應的 Filesystem Entry。前兩者都不存在時，最後的 `/index.html` 是 URI，會觸發 Internal Redirect，而不是在原 Location 直接讀檔。
+
+最後一個參數常見的三種形式：
+
+```text
+/index.html -> Internal Redirect，重新執行 Location Selection
+@fallback   -> 跳至 Named Location
+=404        -> 直接回傳 HTTP Status
+```
+
+#### 實際作答修正
+
+第一個誤判：認為 `/assets/missing.js` 在通用 SPA Fallback 下會回 404。實際上它會 Fallback 到 `/index.html`，回傳 `200` 與 HTML。
+
+第二個誤判：認為 `/dashboard` Fallback 後仍由原本的 `location /` 直接讀取 `index.html`。實際上 `/index.html` 會造成 Internal Redirect；重新比對後命中 `location = /index.html`，最終 Header 是 `exact-index`。
+
+#### Unsafe SPA Config
+
+```nginx
+location / {
+    try_files $uri $uri/ /index.html;
+}
+```
+
+這會把不存在的 Assets、API-like Paths 與真正的 SPA Deep Links 全部當成 SPA Route。Missing JavaScript 收到 HTML 時，Browser 常出現 MIME Type Error 或 `Unexpected token '<'`。
+
+#### Safe SPA Config
+
+```nginx
+location ^~ /assets/ {
+    try_files $uri =404;
+}
+
+location ^~ /api/ {
+    return 404;
+}
+
+location / {
+    try_files $uri $uri/ /index.html;
+}
+```
+
+Routing Contract：
+
+- Existing Asset：回傳 Asset。
+- Missing Asset：404，不可回 HTML。
+- SPA Deep Link：Internal Redirect 到 `/index.html`。
+- API Path：由獨立 Location 處理，不可落入 SPA。
+
+#### Actual Result Lab
+
+完整 Lab：[Safe SPA 與 `try_files`](labs/hour-5/spa-routing-experiment.md)。
+
+```text
+Unsafe Missing Asset -> 200, exact-index
+Safe Missing Asset   -> 404, safe-assets
+Safe Deep Link       -> 200, exact-index
+Safe API Path        -> 404, safe-api
+
+Result: 6/6 SPA routing cases passed.
+```
+
+Hour 5 狀態：**完成**。Deep Link、Existing/Missing Asset 與 API-like Path 均已驗證。
