@@ -92,3 +92,51 @@ Exact 立即勝出
 ```
 
 Hour 1 狀態：**完成**。
+
+### Hour 2：Location Prediction Matrix
+
+#### 學習目標
+
+- 在執行 Nginx 前，先預測 15 個 Requests 的 Location Selection。
+- 同時考慮 Exact、普通 Prefix、`^~`、大小寫敏感／不敏感 Regex、URI Normalization 與 Named Location。
+- 將錯誤預測轉成可重用的判斷規則。
+
+#### Prediction 結果
+
+- 第一組：5／5。
+- 第二組：4／5。
+- 第三組：3／5。
+- 合計：12／15。
+
+完整矩陣記錄於 [Location Prediction Matrix](labs/location-matrix.md)。
+
+#### 三個誤判與修正
+
+1. `/apix` 會匹配 `location /api`。普通 Prefix 沒有 Path Segment 邊界。
+2. `/api/app.PHP` 不匹配 `location ~ \.php$`，因為 `~` 區分大小寫；最後使用 `prefix-api`。
+3. `/assets/../api/test.php` 會先正規化成 `/api/test.php`，因此 `^~ /assets/` 不會入選，最後由 `regex-php` 勝出。
+
+#### Named Location 與 `try_files`
+
+當 `/files/missing.txt` 不存在時：
+
+```text
+先選 location /files/
+  -> try_files 查找失敗
+  -> 內部跳轉至 @missing
+  -> 最終 X-Location 為 named-missing
+```
+
+這裡需要區分「初次 URI 選中的 Location」與「最終產生 Response 的 Location」。
+
+#### Hour 2 心智模型
+
+每次預測都依序回答：
+
+1. 正規化後的 URI 是什麼？
+2. 是否有 Exact Match？
+3. 最長 Prefix 是誰，是否帶有 `^~`？
+4. 哪一個 Regex 依宣告順序最先匹配？大小寫規則是什麼？
+5. Content Handler 是否會觸發 Internal Redirect 或 Named Location？
+
+Hour 2 狀態：**完成**。Prediction 正確率：**12／15**。
