@@ -121,6 +121,12 @@ days/
     README.md
     notes.md
     labs/
+      hour-1/
+      hour-2/
+      hour-3/
+      hour-4/
+      hour-5/
+      hour-7/
   day-2/
     README.md
     labs/

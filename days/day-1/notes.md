@@ -256,6 +256,222 @@ sequenceDiagram
     end
 ```
 
+檢核結論：新 Config 有 Syntax Error 時，Master 保留舊 Workers 與已載入的舊 Config。修正後應先執行 `nginx -t`，再發送 Reload；Master 會自動管理新舊 Worker 世代，不需要管理者手動刪除舊 Workers。
+
+#### Reload 實驗紀錄（V1 → Invalid）
+
+- V1 Config 通過 `nginx -t` 並回傳 `config version: v1`。
+- Invalid Config 因 Syntax Error 無法通過 `nginx -t`。
+- Invalid Config 檢查失敗後，服務仍正常回傳 V1。
+
+因此 Config File 在 Disk 上被修改，不代表執行中的 Workers 已套用它。只有成功載入或 Reload 後，新 Config 才會成為 Runtime State。
+
+#### Reload 實驗紀錄（V1 → V2）
+
+- V2 通過 `nginx -t`。
+- Reload 後 Response 包含 `X-Config-Version: v2`。
+- Master PID 維持不變。
+- Worker PIDs 換成新世代。
+
+Hour 3 狀態：**完成**。
+
+### Hour 4：Config Context、作用域與 Inheritance
+
+#### Config 骨架
+
+```mermaid
+flowchart TD
+    MAIN["main context"] --> EVENTS["events context"]
+    MAIN --> HTTP["http context"]
+    HTTP --> UPSTREAM["upstream context"]
+    HTTP --> SERVER1["server context A"]
+    HTTP --> SERVER2["server context B"]
+    SERVER1 --> LOCATION1["location / context"]
+    SERVER1 --> LOCATION2["location /api/ context"]
+```
+
+`main` 不是由大括號包起來的 Block；它代表 Config 最外層。其他 Context 由對應 Block 建立。
+
+#### 常見 Context
+
+| Context | 主要責任 | 常見 Directives |
+|---|---|---|
+| main | Process 與全域設定 | `user`、`worker_processes`、`pid`、`error_log` |
+| events | Connection Processing | `worker_connections`、`use`、`multi_accept` |
+| http | HTTP Module 共用設定 | `include`、`log_format`、`access_log`、`sendfile` |
+| server | Virtual Server | `listen`、`server_name`、`root` |
+| location | URI Handling | `try_files`、`return`、`proxy_pass` |
+| upstream | 一組 Backend Servers | `server`、`keepalive`、Load-balancing Method |
+
+#### Directive 與 Context
+
+每個 Directive 只能出現在該 Module 允許的 Context。例如：
+
+```nginx
+worker_processes auto;  # main
+
+events {
+    worker_connections 1024;  # events
+}
+
+http {
+    server {
+        listen 80;  # server
+
+        location /api/ {
+            proxy_pass http://backend;  # location
+        }
+    }
+}
+```
+
+把合法 Directive 放錯 Context 通常會讓 `nginx -t` 顯示 `directive is not allowed here`。
+
+#### Inheritance 不是單一通則
+
+「子層自動繼承父層全部設定」是危險的簡化。每個 Module 會定義自己的 Merge 行為。常見模式是：子層沒有設定時使用父層值；但有些 Directive 不繼承、有些會整組取代、有些可以在多個層級合併。
+
+因此判斷 Inheritance 時要查該 Directive 的官方 Context 與 Module 行為，不能只靠巢狀外觀猜測。
+
+#### `include` 的本質
+
+`include` 可先理解成在該位置插入另一份 Config 內容。被 Include 的檔案仍必須符合插入位置的 Context；它不會自動建立新的 Context。
+
+#### Context 檢核答案
+
+| Directive | 合法 Context（本課範例） |
+|---|---|
+| `worker_processes` | main |
+| `worker_connections` | events |
+| `listen` | server |
+| `proxy_pass` | location |
+
+#### Context 實驗紀錄
+
+- Invalid Config 將 `listen` 放在 `http` Context。
+- `nginx -t` 回報：`"listen" directive is not allowed here`。
+- `listen` 的正確位置是 `server` Context。
+- Valid Config 只在 `http` 宣告 `root /usr/share/nginx/html;`。
+- `server` 與 `location /` 都沒有重新宣告 `root`，因此此案例的 Effective Root 來自上層 `http` Context。
+
+精確說法：
+
+```text
+http.root = /usr/share/nginx/html
+server.root 未設定 -> 使用 http.root
+location.root 未設定 -> 使用上層 Effective Root
+```
+
+這是 `root` Directive 的 Inheritance 行為，不能推論所有 Directives 都採用同一規則。
+
+檢核結論：若 `http` 設定 `/site-a`、`server` 改為 `/site-b`、`location` 未設定，則 Location 的 Effective Root 是最近上層的 `/site-b`。
+
+Hour 4 狀態：**完成**。
+
+### Hour 5：Server Selection
+
+#### HTTP Server Selection 心智模型
+
+```mermaid
+flowchart TD
+    R["Request 到達某個 IP:Port"] --> L["找出匹配 listen Address/Port 的 Server 集合"]
+    L --> H{"Host 是否匹配 server_name？"}
+    H -- "Exact Name" --> E["選擇 Exact Server"]
+    H -- "Wildcard / Regex" --> W["依規則選擇 Server"]
+    H -- "沒有匹配" --> D["選擇該 Address/Port 的 Default Server"]
+```
+
+本課先掌握三步：
+
+1. 先由目的 Address／Port 決定候選 `server` 集合。
+2. 再用 HTTP Host 比對集合內的 `server_name`。
+3. 沒有任何 Name 匹配時，使用該 Address／Port 的 `default_server`；若未明確標記，通常是該組第一個 Server。
+
+`default_server` 是 `listen` 的屬性，不是 `server_name` 的名稱。
+
+#### Server Selection 預測
+
+| HTTP Host | 預測結果 | 原因 |
+|---|---|---|
+| `a.local.test` | `site-a` | Exact `server_name` Match |
+| `b.local.test` | `site-b` | Exact `server_name` Match |
+| `unknown.local.test` | `default` | 沒有 Name Match，使用 `default_server` |
+
+#### Server Selection 實驗結果
+
+三個 Actual Results 與 Prediction 完全相同：`site-a`、`site-b`、`default`。
+
+Hour 5 狀態：**完成**。
+
+### Hour 6：Validation、Reload 與 Logs
+
+Hour 6 的目標已分散在 Hour 1、3、4 完成：
+
+- `nginx -t`：驗證 Valid、Syntax Error、Wrong Context。
+- `nginx -T`：查看 Include 展開後的完整 Runtime Candidate Config。
+- Graceful Reload：Master PID 不變，Worker PIDs 換代。
+- Access/Error Logs：確認 `/` 為 200、`/not-found` 為 404。
+
+Hour 6 狀態：**完成**。
+
+### Hour 7：Fault Injection
+
+#### Wrong Server Selection
+
+需求：`api.local.test` 應命中 FaceID API Server。
+
+實際 Config：API Server 只宣告 `server_name app.local.test;`。
+
+```text
+Host: api.local.test
+  -> 沒有 server_name Match
+  -> 使用 default_server
+  -> X-Selected-Server: default
+```
+
+最小修正取決於 Domain Contract：
+
+```nginx
+# api.local.test 是唯一正確名稱
+server_name api.local.test;
+
+# 或兩個名稱都必須相容
+server_name api.local.test app.local.test;
+```
+
+Regression Matrix 必須包含 Intended Host、Unknown Host、Direct IP，以及被修改的舊 Host 行為。
+
+#### Wrong Server Regression Result
+
+- `api.local.test` → `faceid-api`
+- `unknown.local.test` → `default`
+- Direct IP → `default`
+
+Hour 7 狀態：**完成**。
+
+### Hour 8：Day 1 總驗收
+
+驗收範圍：
+
+- Client → Kernel → Nginx Request Lifecycle
+- Event-driven、Non-blocking I/O、epoll
+- Master／Worker／Optional Thread Pool
+- Config Context 與 `root` Inheritance
+- Server Selection 與 Default Server
+- Syntax、Routing 與 Missing File Fault Classification
+
+#### Day 1 驗收待確認的兩個精確觀念
+
+1. HTTPS 流程是 `DNS -> TCP -> TLS -> HTTP Request`；HTTP Request 並未消失，而是經 TLS 加密傳輸。
+2. `server_name _` 不是 Wildcard 或特殊 Default 語法；Fallback 的決定因素是 `listen ... default_server`。
+
+最終確認：
+
+- TLS Handshake 後傳送 HTTP Request。
+- Unknown Host 使用 Default Server 的原因是 `default_server`，不是 `server_name _`。
+
+Day 1 狀態：**完成。知識驗收、教材檔案與所有有效 Config 均已驗證。**
+
 #### 自我檢核
 
 1. DNS 解析成功，是否代表 Nginx 一定會選到正確的 Server Block？

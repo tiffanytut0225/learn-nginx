@@ -1,4 +1,4 @@
-# Day 1・Hour 1 實驗：觀察 Client 到 Nginx
+# Hour 1 實驗：觀察 Client 到 Nginx
 
 ## 實驗目標
 

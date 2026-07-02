@@ -34,20 +34,20 @@ URL -> DNS -> TCP -> TLS（HTTPS）-> HTTP Request
 
 ### Hour 3：Process Model
 
-- [ ] 回答初級 1.1 第 2 題、高級 3.1 第 2 至 6 題，以及專家級 4.1 第 5 題。
-- [ ] 畫出 Master、Workers、Connections、Optional Thread Pool 的關係。
-- [ ] 說明 Reload 時新舊 Workers 如何交接。
+- [x] 回答初級 1.1 第 2 題、高級 3.1 第 2 至 6 題，以及專家級 4.1 第 5 題。
+- [x] 畫出 Master、Workers、Connections、Optional Thread Pool 的關係。
+- [x] 說明 Reload 時新舊 Workers 如何交接。
 
 ### Hour 4：Config Context
 
-- [ ] 回答初級 1.1 第 3、4 題，以及專家級 4.1 第 8 題。
-- [ ] 建立 `days/day-1/labs/nginx.conf`，包含 main、events、http、兩個 server。
-- [ ] 標註每個 Directive 合法 Context 與 Inheritance。
+- [x] 回答初級 1.1 第 3、4 題，以及專家級 4.1 第 8 題。
+- [x] 建立 `days/day-1/labs/hour-4/nginx-valid.conf`，包含 main、events、http、server 與 location。
+- [x] 標註每個 Directive 合法 Context 與 Inheritance。
 
 ### Hour 5：Server Selection
 
-- [ ] 建立兩個 Virtual Hosts 及 Explicit `default_server`。
-- [ ] 先預測再執行：
+- [x] 建立兩個 Virtual Hosts 及 Explicit `default_server`。
+- [x] 先預測再執行：
 
 ```bash
 curl -i -H 'Host: a.local.test' http://127.0.0.1:8080/
@@ -57,23 +57,23 @@ curl -i -H 'Host: unknown.local.test' http://127.0.0.1:8080/
 
 ### Hour 6：Validation、Reload 與 Logs
 
-- [ ] 使用 `nginx -t` 驗證 Syntax。
-- [ ] 使用 `nginx -T` 檢查 Include 展開結果。
-- [ ] 執行 Graceful Reload，觀察 Process 變化。
-- [ ] 產生 200 與 404，觀察 Access/Error Logs。
+- [x] 使用 `nginx -t` 驗證 Syntax。
+- [x] 使用 `nginx -T` 檢查 Include 展開結果。
+- [x] 執行 Graceful Reload，觀察 Process 變化。
+- [x] 產生 200 與 404，觀察 Access/Error Logs。
 
 ### Hour 7：Fault Injection
 
-- [ ] 製造並修復 Syntax Error。
-- [ ] 製造 Valid Config 但 Wrong Server Selection。
-- [ ] 製造 Correct Routing 但 Missing File。
-- [ ] 寫入 `days/day-1/labs/fault-log.md`。
+- [x] 製造並修復 Syntax Error。
+- [x] 製造 Valid Config 但 Wrong Server Selection。
+- [x] 製造 Correct Routing 但 Missing File。
+- [x] 寫入 `days/day-1/labs/hour-7/fault-log.md`。
 
 ### Hour 8：驗收
 
-- [ ] 三分鐘內說明 Master／Worker／Event Loop。
-- [ ] 正確預測三個 Host Requests。
-- [ ] 使用 `nginx -t`、Response 與 Logs 區分三類故障。
+- [x] 三分鐘內說明 Master／Worker／Event Loop。
+- [x] 正確預測三個 Host Requests。
+- [x] 使用 `nginx -t`、Response 與 Logs 區分三類故障。
 
 ## Day 2：Location、Static Files、SPA 與 Rewrite（8 小時）
 
