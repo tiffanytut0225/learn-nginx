@@ -186,3 +186,75 @@ curl --path-as-is http://127.0.0.1:8086/assets/../api/test.php
 - Nginx Actual：15／15。
 
 Hour 3 狀態：**完成**。全部 Cases 已由 Response Header 實測。
+
+### Hour 4：`root`、`alias` 與 Filesystem Path
+
+#### 核心 Path Transformation
+
+`root` 保留完整 URI：
+
+```text
+Filesystem Path = root 值 + 完整 Normalized URI
+```
+
+`alias` 取代匹配的 Location Prefix：
+
+```text
+Filesystem Path = alias 值 + 移除 Location Prefix 後的剩餘 URI
+```
+
+例如 Request `/images/logo.png`：
+
+```nginx
+location /images/ { root /srv/site; }
+# /srv/site/images/logo.png
+
+location /images/ { alias /srv/site/; }
+# /srv/site/logo.png
+```
+
+#### 實際作答修正
+
+最初只將 `root`、`alias` 的 Directive 值當成答案，漏掉 URI Transformation。修正後，六個預測 Paths 全部正確。
+
+關鍵問題不是「設定值是什麼」，而是：
+
+```text
+Location 選定後，Nginx 如何把 Normalized URI 轉換成完整 Filesystem Path？
+```
+
+#### Regex Location 中的 `alias`
+
+Regex Location 沒有可直接移除的固定 Prefix，因此使用 Captures 明確組合路徑：
+
+```nginx
+location ~ ^/exports/([^/]+)/(.+\.csv)$ {
+    alias /archive/$1/$2;
+}
+```
+
+Request `/exports/2026/reports/july.csv`：
+
+```text
+$1 = 2026
+$2 = reports/july.csv
+Filesystem Path = /archive/2026/reports/july.csv
+```
+
+#### Actual Result Lab
+
+實驗透過 Response Header 暴露 `$request_filename`，直接觀察 Nginx 最後使用的 Path：
+
+```nginx
+add_header X-File-Path $request_filename always;
+```
+
+完整 Lab：[root 與 alias Path Mapping](labs/hour-4/path-mapping-experiment.md)。
+
+結果：
+
+```text
+Result: 6/6 path mappings passed.
+```
+
+Hour 4 狀態：**完成**。六個 Filesystem Paths 均已預測並實測。
