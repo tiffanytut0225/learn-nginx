@@ -1,5 +1,9 @@
 # Day 2：Location、Static Files、SPA 與 Rewrite
 
+## 今日教材
+
+- [學習筆記](notes.md)
+
 本日教材會隨學習進度放在此目錄。
 
 ## 8 小時進度
