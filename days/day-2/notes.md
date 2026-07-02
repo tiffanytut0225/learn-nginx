@@ -330,3 +330,70 @@ Result: 6/6 SPA routing cases passed.
 ```
 
 Hour 5 狀態：**完成**。Deep Link、Existing/Missing Asset 與 API-like Path 均已驗證。
+
+### Hour 6：Rewrite 與 Internal Redirect
+
+#### Directive 責任分界
+
+| Directive | 適合解決的問題 |
+|---|---|
+| `return` | 直接回傳 Status 或固定 Redirect |
+| `rewrite` | 使用 Regex 改寫 URI |
+| `try_files` | 依 Filesystem 是否存在選擇處理方式 |
+| `error_page` | 將特定錯誤交給自訂頁面或另一個 Location |
+
+能用 `return` 表達的固定 Redirect，不需要使用較複雜的 `rewrite`。能用 `try_files` 表達的檔案／SPA 選擇，也不應堆疊 Rewrite Rules。
+
+#### External Redirect 與 Internal Rewrite
+
+```nginx
+location = /old {
+    return 301 /new;
+}
+```
+
+`return 301` 結束目前 Request。Client 收到 `Location` 後，必須自行發送第二個 Request；未使用 `curl -L` 時，原 Response 不包含 `/new` Location 的 Header。
+
+```nginx
+location = /legacy {
+    rewrite ^ /new last;
+}
+```
+
+`rewrite ... last` 在 Nginx 內部改變 URI 並重新執行 Location Selection。Client 只送一個 Request，最終命中 `location = /new`。
+
+#### `error_page` 與 Status
+
+```nginx
+error_page 404 /404.html;
+```
+
+這會 Internal Redirect 到 `/404.html`，重新選擇 Location 並使用其 Body／Headers，但保留原始 `404`。
+
+```nginx
+error_page 404 = /404.html;
+```
+
+帶 `=` 時採用新處理結果的 Status；若 `/404.html` 正常處理，最終通常為 `200`。
+
+#### 實際作答修正
+
+1. 將 `/old` 的 301 Response 與 Client 跟隨 Redirect 後的 200 Response 混在一起。修正後先分辨「目前 Response」與「第二個 Request」。
+2. 正確預測 `error_page` 保留 404，但誤判不會帶目標 Location Header。實際上它會 Internal Redirect，因此最終包含 `X-Location: error-page`。
+
+#### Actual Result Lab
+
+完整 Lab：[Rewrite 與 Internal Redirect](labs/hour-6/internal-redirect-experiment.md)。
+
+```text
+return 301          -> 301, no X-Location
+rewrite last        -> 200, exact-new
+try_files existing  -> 200, try-files
+try_files fallback  -> 404, named-fallback
+error_page preserve -> 404, error-preserve
+error_page convert  -> 200, error-convert
+
+Result: 6/6 redirect and fallback cases passed.
+```
+
+Hour 6 狀態：**完成**。External Redirect、Internal Redirect 與 Status Preservation 均已驗證。
