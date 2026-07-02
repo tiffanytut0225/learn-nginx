@@ -3,6 +3,8 @@
 ## 今日教材
 
 - [學習筆記](notes.md)
+- [Hour 2：Location Prediction Matrix](labs/location-matrix.md)
+- [Hour 3：Location Actual Result Lab](labs/hour-3/location-experiment.md)
 
 本日教材會隨學習進度放在此目錄。
 

@@ -140,3 +140,49 @@ Hour 1 狀態：**完成**。
 5. Content Handler 是否會觸發 Internal Redirect 或 Named Location？
 
 Hour 2 狀態：**完成**。Prediction 正確率：**12／15**。
+
+### Hour 3：Location Lab
+
+#### 實驗方法
+
+將 Hour 2 的 Location Matrix 實作為 Nginx Config。每個 Location 都回傳可辨識的 `X-Location` Header，再由驗證腳本逐一比較 Expected 與 Actual。
+
+完整步驟與檔案：
+
+- [Location Actual Result Lab](labs/hour-3/location-experiment.md)
+- [Nginx Config](labs/hour-3/nginx.conf)
+- [驗證腳本](labs/hour-3/verify-location-matrix.sh)
+
+#### TDD 驗證
+
+RED：在 Nginx Lab 尚未啟動時執行驗證腳本，第 1 題因 8085 沒有可連線服務而失敗。
+
+GREEN：啟動 Config 後，15 個 Cases 的 `X-Location` 全部符合 Expected：
+
+```text
+Result: 15/15 cases passed.
+```
+
+#### 實驗中的環境診斷
+
+原定的 Host Port `8085` 已由 Day 1 的 `learn-nginx-fault` Container 占用。保留既有 Container，不直接停止它；Hour 3 改用 `8086`。
+
+此外，Container 與 Nginx 正常運行時，Sandbox 內仍無法連到 Host Port；在允許的本機網路環境執行同一支腳本後，完整 Matrix 通過。這區分了 Nginx Config Failure 與執行環境的 Network Boundary。
+
+#### `curl --path-as-is`
+
+測試 `/assets/../api/test.php` 時使用：
+
+```bash
+curl --path-as-is http://127.0.0.1:8086/assets/../api/test.php
+```
+
+`--path-as-is` 可避免 `curl` 在送出 Request 前自行正規化路徑，確保觀察到的是 Nginx 的 URI Normalization。
+
+#### Prediction 與 Actual
+
+- 原始 Prediction：12／15。
+- 修正後 Expected：15／15。
+- Nginx Actual：15／15。
+
+Hour 3 狀態：**完成**。全部 Cases 已由 Response Header 實測。
