@@ -2,7 +2,7 @@
 
 這是一套五天、40 小時的 Nginx 密集學習教材。它不只整理設定語法，而是透過「先預測、再實驗、故意破壞、最後驗證」的方式，建立能用於實務設定與攻錯的心智模型。
 
-> 目前 **Day 1 已有完整教材、實驗與驗收**；Day 2–5 已建立學習路線，實驗內容會隨進度補上。
+> 目前 **Day 1、Day 2 已完成教材、實驗與驗收**；Day 3–5 已建立學習路線，實驗內容會隨進度補上。
 
 ## 適合誰
 
@@ -17,7 +17,7 @@
 | Day | 主題 | 狀態 | 教材 |
 |---|---|---|---|
 | Day 1 | 架構、Request Lifecycle 與 Config 骨架 | 完整教材 | [開始 Day 1](days/day-1/README.md) |
-| Day 2 | Location、Static Files、SPA 與 Rewrite | 課綱 | [查看 Day 2](days/day-2/README.md) |
+| Day 2 | Location、Static Files、SPA 與 Rewrite | 完整教材 | [開始 Day 2](days/day-2/README.md) |
 | Day 3 | Reverse Proxy、Upstream 與擴展性 | 課綱 | [查看 Day 3](days/day-3/README.md) |
 | Day 4 | HTTPS、Domain/IP 與安全 | 課綱 | [查看 Day 4](days/day-4/README.md) |
 | Day 5 | 併發、效能、Observability 與總攻錯 | 課綱 | [查看 Day 5](days/day-5/README.md) |
@@ -51,7 +51,7 @@ Docker 指令需要 Docker Engine 或 Docker Desktop 已經啟動。
 cd learn-ngnix
 ```
 
-接著打開 [Day 1 教材入口](days/day-1/README.md)，並從第一個 Request Lifecycle 實驗開始：
+初次學習請打開 [Day 1 教材入口](days/day-1/README.md)，並從第一個 Request Lifecycle 實驗開始：
 
 ```bash
 docker run --rm -d \
@@ -102,7 +102,7 @@ learn-ngnix/
 ├── days/
 │   ├── README.md                 # 每日教材索引
 │   ├── day-1/                    # 已完成的筆記、Labs 與驗收
-│   ├── day-2/                    # Day 2 課綱
+│   ├── day-2/                    # 已完成的筆記、Labs、Fault Log 與驗收
 │   ├── day-3/                    # Day 3 課綱
 │   ├── day-4/                    # Day 4 課綱
 │   └── day-5/                    # Day 5 課綱
@@ -118,6 +118,8 @@ learn-ngnix/
 - [每日教材索引](days/README.md)
 - [Day 1 學習筆記](days/day-1/notes.md)
 - [Day 1 總驗收](days/day-1/day-1-assessment.md)
+- [Day 2 學習筆記](days/day-2/notes.md)
+- [Day 2 總驗收](days/day-2/day-2-assessment.md)
 - [Nginx 密集學習方案設計](docs/superpowers/specs/2026-07-01-nginx-intensive-learning-design.md)
 - [README 文件設計](docs/superpowers/specs/2026-07-02-project-readme-design.md)
 
