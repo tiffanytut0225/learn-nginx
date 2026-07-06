@@ -79,50 +79,50 @@ curl -i -H 'Host: unknown.local.test' http://127.0.0.1:8080/
 
 ### Hour 1：Location Algorithm
 
-- [ ] 回答 E1-E7。
-- [ ] 寫出 Exact、Longest Prefix、`^~`、Regex 的 Selection Algorithm。
+- [x] 回答 E1-E7。
+- [x] 寫出 Exact、Longest Prefix、`^~`、Regex 的 Selection Algorithm。
 
 ### Hour 2：Prediction Matrix
 
-- [ ] 建立 `days/day-2/labs/location-matrix.md`。
-- [ ] 至少 15 個 Cases，涵蓋 `=`、Prefix、`^~`、`~`、`~*`、Named Location。
-- [ ] 實作前先填 Prediction。
+- [x] 建立 `days/day-2/labs/location-matrix.md`。
+- [x] 至少 15 個 Cases，涵蓋 `=`、Prefix、`^~`、`~`、`~*`、Named Location。
+- [x] 實作前先填 Prediction。
 
 ### Hour 3：Location Lab
 
-- [ ] 每個 Location 回傳識別 Header。
-- [ ] 執行全部 Cases，比較 Prediction 與 Actual。
-- [ ] 對錯誤預測補寫心智模型修正。
+- [x] 每個 Location 回傳識別 Header。
+- [x] 執行全部 Cases，比較 Prediction 與 Actual。
+- [x] 對錯誤預測補寫心智模型修正。
 
 ### Hour 4：`root`、`alias` 與 Filesystem Path
 
-- [ ] 回答 F1-F2、F7。
-- [ ] 對六個 URI 寫出 Nginx 最後查找的完整 Filesystem Path。
-- [ ] 驗證 Normal Prefix 與 Regex Location 中的行為。
+- [x] 回答 F1-F2、F7。
+- [x] 對六個 URI 寫出 Nginx 最後查找的完整 Filesystem Path。
+- [x] 驗證 Normal Prefix 與 Regex Location 中的行為。
 
 ### Hour 5：SPA 與 `try_files`
 
-- [ ] 回答 F3-F4。
-- [ ] 驗證 `/`、SPA Deep Link、Existing Asset、Missing Asset、API-like Path。
-- [ ] Missing Asset 必須 404，不可錯回 `index.html`。
+- [x] 回答 F3-F4。
+- [x] 驗證 `/`、SPA Deep Link、Existing Asset、Missing Asset、API-like Path。
+- [x] Missing Asset 必須 404，不可錯回 `index.html`。
 
 ### Hour 6：Rewrite 與 Internal Redirect
 
-- [ ] 比較 `return`、`rewrite`、`try_files`、`error_page`。
-- [ ] 觀察 Internal Redirect 造成的 Location Re-selection。
-- [ ] 避免用複雜 Rewrite 解決可由 `return` 或 `try_files` 表達的需求。
+- [x] 比較 `return`、`rewrite`、`try_files`、`error_page`。
+- [x] 觀察 Internal Redirect 造成的 Location Re-selection。
+- [x] 避免用複雜 Rewrite 解決可由 `return` 或 `try_files` 表達的需求。
 
 ### Hour 7：Static Delivery
 
-- [ ] 回答 F5-F6。
-- [ ] 比較 `index.html` 與 Hashed Asset 的 Cache Policy。
-- [ ] 驗證 ETag、Last-Modified、Conditional Request、Compression 與 Content-Type。
+- [x] 回答 F5-F6。
+- [x] 比較 `index.html` 與 Hashed Asset 的 Cache Policy。
+- [x] 驗證 ETag、Last-Modified、Conditional Request、Compression 與 Content-Type。
 
 ### Hour 8：攻錯與驗收
 
-- [ ] 診斷 SPA 404、Missing Asset 回 HTML、錯誤 alias、Regex 順序衝突。
-- [ ] 至少正確預測 12/15 個 Location Cases。
-- [ ] 用 Path Transformation 解釋 `root` 與 `alias`。
+- [x] 診斷 SPA 404、Missing Asset 回 HTML、錯誤 alias、Regex 順序衝突。
+- [x] 至少正確預測 12/15 個 Location Cases。
+- [x] 用 Path Transformation 解釋 `root` 與 `alias`。
 
 ## Day 3：Reverse Proxy、Upstream 與擴展性（8 小時）
 

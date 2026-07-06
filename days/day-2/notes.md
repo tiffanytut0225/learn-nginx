@@ -469,3 +469,51 @@ Result: 7/7 static delivery checks passed.
 ```
 
 Hour 7 狀態：**完成**。Cache、Conditional Request、MIME 與 Compression 均已驗證。
+
+### Hour 8：攻錯與總驗收
+
+#### 四類 Fault Diagnosis
+
+1. SPA Deep Link 404：通用 Location 以 `=404` 結束，沒有 Fallback 到 `/index.html`。
+2. Missing Asset 回 HTML：Assets 落入通用 SPA Fallback，Internal Redirect 到 `/index.html`。
+3. `alias` Path 錯誤：Location 以 `/` 結尾但 Alias Target 沒有，產生 `/srv/mediacat.jpg`。
+4. Regex 順序衝突：多個 Regex 同時匹配時，第一個匹配者勝出，不比較誰看起來更精確。
+
+完整紀錄：[Hour 8 Fault Log](labs/hour-8/fault-log.md)。
+
+#### 弱點複測
+
+```text
+Missing Asset 安全結果               -> 404
+alias /srv/media + /media/cat.jpg     -> /srv/mediacat.jpg
+多個 Regex 同時匹配                  -> 第一個匹配者勝出
+try_files 最後使用 /index.html        -> Internal Redirect，重跑 Location Selection
+```
+
+Internal Redirect 最後一題確認：`/dashboard` Fallback 到 `/index.html` 後，最終命中 `location = /index.html`，Response Header 為 `exact-index`。
+
+#### Routing Checklist
+
+診斷 Nginx Routing 時依序檢查：
+
+1. Normalized URI 是什麼？
+2. Server Block 是否正確？
+3. Exact、最長 Prefix、`^~`、Regex 最終誰勝出？
+4. `root` 或 `alias` 產生的完整 Filesystem Path 是什麼？
+5. `try_files` 每個 Candidate 是否存在？最後參數會做什麼？
+6. 是否發生 Internal Redirect，導致 Location Re-selection？
+7. Asset、API、SPA Route 是否有分開的 Failure Contract？
+8. Status、Content-Type、Cache-Control、ETag、Last-Modified 與 Content-Encoding 是否符合預期？
+
+#### Day 2 驗收結果
+
+- Location Prediction：12／15，達到門檻；修正後 Actual 15／15。
+- Filesystem Path Mapping：6／6。
+- Safe SPA Routing：6／6。
+- Redirect 與 Fallback：6／6。
+- Static Delivery：7／7。
+- 四類 Fault 均完成診斷，弱點複測完成。
+
+Hour 8 狀態：**完成**。
+
+Day 2 狀態：**完成**。Location、Static Files、SPA、Rewrite 與 Static Delivery 均已完成知識驗收與實機驗證。

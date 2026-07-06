@@ -9,6 +9,8 @@
 - [Hour 5：Safe SPA 與 try_files Lab](labs/hour-5/spa-routing-experiment.md)
 - [Hour 6：Rewrite 與 Internal Redirect Lab](labs/hour-6/internal-redirect-experiment.md)
 - [Hour 7：Static Delivery Lab](labs/hour-7/static-delivery-experiment.md)
+- [Hour 8：Fault Log](labs/hour-8/fault-log.md)
+- [Day 2 總驗收](day-2-assessment.md)
 
 本日教材會隨學習進度放在此目錄。
 
