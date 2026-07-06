@@ -158,9 +158,9 @@ curl -i -H 'Host: unknown.local.test' http://127.0.0.1:8080/
 
 ### Hour 6：Upstream Keepalive
 
-- [ ] 回答 G8。
-- [ ] 畫出 Client Keepalive 與 Upstream Keepalive 是兩組不同 Connections。
-- [ ] 驗證 HTTP Version 與 Connection Header 配置。
+- [x] 回答 G8。
+- [x] 畫出 Client Keepalive 與 Upstream Keepalive 是兩組不同 Connections。
+- [x] 驗證 HTTP Version 與 Connection Header 配置。
 
 ### Hour 7：Failure、Retry 與 DNS
 

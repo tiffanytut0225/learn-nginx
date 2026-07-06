@@ -344,3 +344,57 @@ Result: 3/3 upstream algorithm checks passed.
 ```
 
 Hour 5 狀態：**完成**。Round-robin、Least Connections 與 Sticky Behavior 均已驗證或界定限制。
+
+### Hour 6：Upstream Keepalive
+
+#### 兩組獨立 Connections
+
+Reverse Proxy 不是一條 TCP Connection 穿過 Nginx：
+
+```text
+Browser <-- Client Connection --> Nginx <-- Upstream Connection --> Backend
+```
+
+Client Keepalive 與 Upstream Keepalive 各自有獨立的 Lifecycle、Timeout 與 Capacity。Browser 重用 Client Connection，不代表 Nginx 自動重用 Upstream Connection；反過來也一樣。
+
+#### Upstream Keepalive Config
+
+```nginx
+upstream backend {
+    server backend:8080;
+    keepalive 32;
+}
+
+location / {
+    proxy_http_version 1.1;
+    proxy_set_header Connection "";
+    proxy_pass http://backend;
+}
+```
+
+`keepalive 32` 表示每個 Worker 最多快取 32 條 Idle Upstream Keepalive Connections，不是整個 Upstream 同時只能處理 32 個 Requests。
+
+`proxy_http_version 1.1` 讓 Upstream 使用 HTTP/1.1；清空 `Connection` 避免傳送 `close`，使 Connection 有機會回到 Idle Cache 被重用。
+
+#### Actual Result Lab
+
+Backend 回傳它看到的 Nginx Source Port。四次獨立 Client Requests 的結果：
+
+```text
+No Keepalive -> 56571 56573 56575 56577
+Keepalive    -> 56579 56579 56579 56579
+```
+
+Source Port 會依環境改變；關鍵是 No Keepalive 有多個不同 Ports，而 Keepalive 重用同一 Port。
+
+完整 Lab：[Upstream Keepalive](labs/hour-6/upstream-keepalive-experiment.md)。
+
+```text
+Result: 2/2 upstream keepalive modes passed.
+```
+
+#### 實際作答修正
+
+誤認 Browser Keepalive 會自動延伸到 Backend。修正後將 Client 與 Upstream 視為兩組獨立 Connections。
+
+Hour 6 狀態：**完成**。HTTP Version、Connection Header 與 Upstream Connection Reuse 均已驗證。
