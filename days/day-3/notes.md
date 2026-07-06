@@ -283,3 +283,64 @@ Result: 3/3 buffering modes passed.
 相同 Upstream 都持續約 2 秒；差異在 Client 何時收到第一個 Byte。
 
 Hour 4 狀態：**完成**。一般 Response、Large Response、SSE 與 WebSocket 的 Buffering 需求均已比較。
+
+### Hour 5：Upstream Algorithm
+
+#### Round-robin
+
+預設演算法依序輪替 Upstream Servers，不考慮當下 Active Connection 數量：
+
+```text
+A -> B -> A -> B
+```
+
+適合 Request 成本相近、節點能力相近的基礎情境。可使用 `weight` 表達節點能力差異。
+
+#### Least Connections
+
+```nginx
+upstream backend {
+    least_conn;
+    server backend-a;
+    server backend-b;
+}
+```
+
+`least_conn` 偏向目前 Active Connections 較少的節點，並考慮 Weight。它不知道 CPU、Memory 或真實 Response Cost，也不是「選最快機器」。
+
+本次實驗先讓 Slow Request 占用 Backend A，再送 Fast Request：
+
+```text
+Slow Request -> A
+Fast Request -> B
+```
+
+#### IP Hash 與 Sticky 限制
+
+`ip_hash` 讓同一來源 IP 通常映射到同一節點，但不能保證永久固定：
+
+- Client IP 可能改變。
+- NAT 後大量使用者可能集中到相同節點。
+- Backend 故障、移除或擴縮容會改變 Mapping。
+
+重要 Session 應使用 Stateless Token 或 Redis／Database 等 Shared Session Store，不能只存在某台 Backend Memory。
+
+#### 實際作答修正
+
+1. 誤認 `least_conn` 會選 Active Connections 最多的 A；正確是選最少的 B。
+2. 誤認 Round-robin 會考慮 Active Connections；實際只依輪替與 Weight。
+3. 誤認 `ip_hash` 足以保證 Server-side Session；實際只提供有限的 Affinity。
+
+#### Actual Result Lab
+
+完整 Lab：[Upstream Algorithms](labs/hour-5/upstream-algorithms-experiment.md)。
+
+```text
+PASS round-robin sequence=ABAB
+PASS least-conn slow=A fast=B
+PASS ip-hash same-source=A
+
+Result: 3/3 upstream algorithm checks passed.
+```
+
+Hour 5 狀態：**完成**。Round-robin、Least Connections 與 Sticky Behavior 均已驗證或界定限制。

@@ -152,9 +152,9 @@ curl -i -H 'Host: unknown.local.test' http://127.0.0.1:8080/
 
 ### Hour 5：Upstream Algorithm
 
-- [ ] 回答 G7。
-- [ ] 測試 Round-robin 與 Least Connections。
-- [ ] 說明 Sticky Behavior 的限制與風險。
+- [x] 回答 G7。
+- [x] 測試 Round-robin 與 Least Connections。
+- [x] 說明 Sticky Behavior 的限制與風險。
 
 ### Hour 6：Upstream Keepalive
 
