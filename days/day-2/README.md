@@ -8,6 +8,7 @@
 - [Hour 4：root 與 alias Path Mapping Lab](labs/hour-4/path-mapping-experiment.md)
 - [Hour 5：Safe SPA 與 try_files Lab](labs/hour-5/spa-routing-experiment.md)
 - [Hour 6：Rewrite 與 Internal Redirect Lab](labs/hour-6/internal-redirect-experiment.md)
+- [Hour 7：Static Delivery Lab](labs/hour-7/static-delivery-experiment.md)
 
 本日教材會隨學習進度放在此目錄。
 

@@ -397,3 +397,75 @@ Result: 6/6 redirect and fallback cases passed.
 ```
 
 Hour 6 狀態：**完成**。External Redirect、Internal Redirect 與 Status Preservation 均已驗證。
+
+### Hour 7：Static Delivery
+
+#### HTML 與 Hashed Asset 的 Cache Policy
+
+```nginx
+location = /index.html {
+    add_header Cache-Control "no-cache" always;
+}
+
+location ^~ /assets/ {
+    add_header Cache-Control "public, max-age=31536000, immutable" always;
+}
+```
+
+`index.html` 應能快速取得新版本，因為它負責引用最新的 Hashed Assets。`no-cache` 不是禁止儲存，而是要求重用前向 Server 驗證。
+
+帶 Content Hash 的 Asset 內容改變時檔名也會改變，因此舊 URL 可安全快取一年並標記 `immutable`。
+
+#### Conditional Request
+
+Response Validators 與 Request Headers 的對應：
+
+```text
+ETag          <-> If-None-Match
+Last-Modified <-> If-Modified-Since
+```
+
+檔案未改變時，Server 回傳 `304 Not Modified`，不重新傳送 Body，Browser 繼續使用本地快取內容。
+
+#### MIME Type
+
+```nginx
+include /etc/nginx/mime.types;
+```
+
+Nginx 依副檔名選擇 Content-Type。JavaScript 應回傳 JavaScript MIME Type，而不是 `text/html` 或通用 Binary Type；否則 Browser 可能拒絕執行。
+
+#### Gzip Negotiation
+
+Client 宣告支援的 Encoding：
+
+```http
+Accept-Encoding: gzip
+```
+
+Server 實際壓縮後回傳：
+
+```http
+Content-Encoding: gzip
+Vary: Accept-Encoding
+```
+
+`Vary` 告訴 Cache：支援與不支援 Gzip 的 Clients 可能取得不同 Response 版本。
+
+#### Actual Result Lab
+
+完整 Lab：[Static Delivery](labs/hour-7/static-delivery-experiment.md)。
+
+```text
+PASS index.html requires revalidation
+PASS hashed asset is immutable for one year
+PASS JavaScript MIME type is correct
+PASS ETag and Last-Modified are present
+PASS If-None-Match returns 304
+PASS If-Modified-Since returns 304
+PASS Gzip negotiation sets Content-Encoding and Vary
+
+Result: 7/7 static delivery checks passed.
+```
+
+Hour 7 狀態：**完成**。Cache、Conditional Request、MIME 與 Compression 均已驗證。
