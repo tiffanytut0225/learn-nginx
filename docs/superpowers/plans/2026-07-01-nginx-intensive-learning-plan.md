@@ -146,9 +146,9 @@ curl -i -H 'Host: unknown.local.test' http://127.0.0.1:8080/
 
 ### Hour 4：Buffering 與 Streaming
 
-- [ ] 回答 G5-G6。
-- [ ] 比較一般 Response、Large Response、Streaming/SSE、WebSocket 的需求。
-- [ ] 記錄何時不應盲目關閉 Proxy Buffering。
+- [x] 回答 G5-G6。
+- [x] 比較一般 Response、Large Response、Streaming/SSE、WebSocket 的需求。
+- [x] 記錄何時不應盲目關閉 Proxy Buffering。
 
 ### Hour 5：Upstream Algorithm
 

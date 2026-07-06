@@ -219,3 +219,67 @@ Result: 4/4 proxy timeout cases passed.
 ```
 
 Hour 3 狀態：**完成**。Connect Failure、Slow Send、Slow Response 與 Healthy Control 均已驗證。
+
+### Hour 4：Buffering 與 Streaming
+
+#### Buffering 的責任
+
+一般 Response 保留 Proxy Buffering 時：
+
+```text
+Upstream 快速產生完整 Response
+  -> Nginx 暫存於 Memory，必要時使用 Temporary File
+  -> Upstream Connection 可較早釋放
+  -> Nginx 依 Client 速度傳送
+```
+
+關閉 Buffering 時，Nginx 邊讀 Upstream 邊傳 Client。若 Client 很慢，Upstream Connection 可能被占用更久。因此不應看到 Streaming 就全站設定 `proxy_buffering off`。
+
+#### 情境比較
+
+| 情境 | 一般方向 | 原因 |
+|---|---|---|
+| 一般 JSON／HTML | 保留 Buffering | 隔離 Upstream 與慢速 Client |
+| Large Response | 依 Size、Disk I/O、Client Speed 測量 | 不能只因檔案大就盲目關閉 |
+| SSE／Streaming | 關閉 Buffering | Event 必須及時抵達 Client |
+| WebSocket | 使用 Upgrade Flow | 長連線、雙向即時傳輸 |
+
+Streaming Location 可設定：
+
+```nginx
+proxy_buffering off;
+```
+
+Upstream 也可針對單一 Response 回傳：
+
+```http
+X-Accel-Buffering: no
+```
+
+#### WebSocket Upgrade
+
+WebSocket 先以 HTTP/1.1 Handshake 開始，Server 回 `101 Switching Protocols` 後切換為雙向協定。
+
+```nginx
+proxy_http_version 1.1;
+proxy_set_header Upgrade $http_upgrade;
+proxy_set_header Connection "upgrade";
+```
+
+`Upgrade` 與 `Connection` 是 Hop-by-hop Headers，不會由 Proxy 自動轉送到下一跳，因此必須明確設定。
+
+#### Actual Result Lab
+
+完整 Lab：[Buffering 與 Streaming](labs/hour-4/buffering-streaming-experiment.md)。
+
+```text
+Buffered        -> TTFB 2.02s, Total 2.02s
+Unbuffered      -> TTFB 0.003s, Total 2.02s
+X-Accel no      -> TTFB 0.004s, Total 2.02s
+
+Result: 3/3 buffering modes passed.
+```
+
+相同 Upstream 都持續約 2 秒；差異在 Client 何時收到第一個 Byte。
+
+Hour 4 狀態：**完成**。一般 Response、Large Response、SSE 與 WebSocket 的 Buffering 需求均已比較。

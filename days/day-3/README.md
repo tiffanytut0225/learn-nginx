@@ -7,6 +7,7 @@
 - [Hour 1：proxy_pass URI Lab](labs/hour-1/proxy-pass-uri-experiment.md)
 - [Hour 2：Proxy Headers 與 Trust Boundary Lab](labs/hour-2/proxy-headers-experiment.md)
 - [Hour 3：Proxy Timeouts Lab](labs/hour-3/proxy-timeouts-experiment.md)
+- [Hour 4：Buffering 與 Streaming Lab](labs/hour-4/buffering-streaming-experiment.md)
 
 本日教材會隨學習進度放在此目錄。
 
