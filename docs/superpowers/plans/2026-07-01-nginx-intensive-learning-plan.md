@@ -128,9 +128,9 @@ curl -i -H 'Host: unknown.local.test' http://127.0.0.1:8080/
 
 ### Hour 1：`proxy_pass` URI
 
-- [ ] 回答 G1-G2。
-- [ ] 建立 `days/day-3/labs/upstream-uri-matrix.md`。
-- [ ] 比較有／無 URI Suffix、Prefix Location、Regex Location、Rewrite 後 URI。
+- [x] 回答 G1-G2。
+- [x] 建立 `days/day-3/labs/upstream-uri-matrix.md`。
+- [x] 比較有／無 URI Suffix、Prefix Location、Regex Location、Rewrite 後 URI。
 
 ### Hour 2：Proxy Headers 與 Trust Boundary
 
