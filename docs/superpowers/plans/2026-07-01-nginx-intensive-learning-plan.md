@@ -134,9 +134,9 @@ curl -i -H 'Host: unknown.local.test' http://127.0.0.1:8080/
 
 ### Hour 2：Proxy Headers 與 Trust Boundary
 
-- [ ] 回答 G3。
-- [ ] 驗證 Host、X-Forwarded-For、X-Forwarded-Proto、X-Real-IP。
-- [ ] 說明哪些 Incoming Headers 不能無條件信任。
+- [x] 回答 G3。
+- [x] 驗證 Host、X-Forwarded-For、X-Forwarded-Proto、X-Real-IP。
+- [x] 說明哪些 Incoming Headers 不能無條件信任。
 
 ### Hour 3：Timeouts
 

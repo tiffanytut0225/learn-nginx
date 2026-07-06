@@ -82,3 +82,87 @@ Result: 7/7 upstream URI cases passed.
 Invalid Regex Config：`nginx -t` 如預期失敗。
 
 Hour 1 狀態：**完成**。Prefix Replacement、Slash、Regex、Named Location 與 Rewrite 後 URI 均已驗證。
+
+### Hour 2：Proxy Headers 與 Trust Boundary
+
+#### 預設 Upstream Host
+
+若沒有 `proxy_set_header Host ...`，Nginx 預設將 Upstream `Host` 設為 `$proxy_host`，也就是 `proxy_pass` 中的 Host 與 Port，而不是 Client 原始 Host。
+
+```nginx
+proxy_pass http://backend:8080;
+```
+
+```text
+Upstream Host: backend:8080
+```
+
+若 Backend 需要原始網站 Host，必須明確設定：
+
+```nginx
+proxy_set_header Host $host;
+```
+
+#### 常見 Proxy Headers
+
+```nginx
+proxy_set_header Host              $host;
+proxy_set_header X-Real-IP         $remote_addr;
+proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+proxy_set_header X-Forwarded-Proto $scheme;
+```
+
+| Header | 意義 |
+|---|---|
+| `Host` | 使用者請求的網站名稱 |
+| `X-Real-IP` | 目前認定的單一 Client IP |
+| `X-Forwarded-For`（XFF） | Client 與 Proxy IP Chain |
+| `X-Forwarded-Proto` | Client 對目前 Proxy 使用的 `http` 或 `https` |
+
+典型 TLS Termination 架構：
+
+```text
+Browser --HTTPS--> Nginx --HTTP--> Backend
+```
+
+Backend 雖然收到 HTTP Connection，仍可透過 `X-Forwarded-Proto: https` 知道外部原始協定。
+
+#### Trust Boundary
+
+Client 可以自行偽造：
+
+```http
+X-Forwarded-For: 1.2.3.4
+```
+
+`$proxy_add_x_forwarded_for` 會保留 Incoming XFF，再附加 `$remote_addr`：
+
+```text
+1.2.3.4, 192.168.215.1
+```
+
+最左邊的值仍可能是攻擊者輸入。只有在前方 Proxy Chain 與可信 IP 範圍都已明確設定時，才能依規則解析 XFF。
+
+若目前 Nginx 是直接面對 Internet 的第一層 Edge，可覆寫 Client 傳入值：
+
+```nginx
+proxy_set_header X-Forwarded-For $remote_addr;
+```
+
+#### 實際作答修正
+
+誤認 `$proxy_add_x_forwarded_for` 產生的最左邊 IP 可直接信任。實際上 Nginx 只負責串接 Header，並不驗證 Incoming Value 的真實性。
+
+#### Actual Result Lab
+
+完整 Lab：[Proxy Headers 與 Trust Boundary](labs/hour-2/proxy-headers-experiment.md)。
+
+```text
+Default -> host=127.0.0.1:8080, xff=1.2.3.4
+Append  -> host=app.example.com, xff=1.2.3.4, 192.168.215.1
+Edge    -> host=app.example.com, xff=192.168.215.1
+
+Result: 3/3 proxy header modes passed.
+```
+
+Hour 2 狀態：**完成**。Host、X-Real-IP、XFF、Proto 與 Edge Trust Boundary 均已驗證。
