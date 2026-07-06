@@ -166,3 +166,56 @@ Result: 3/3 proxy header modes passed.
 ```
 
 Hour 2 狀態：**完成**。Host、X-Real-IP、XFF、Proto 與 Edge Trust Boundary 均已驗證。
+
+### Hour 3：Timeouts
+
+#### 三段 Timeout
+
+| Directive | 控制範圍 |
+|---|---|
+| `proxy_connect_timeout` | Nginx 與 Upstream 建立 Connection |
+| `proxy_send_timeout` | Nginx 將 Request 傳送給 Upstream |
+| `proxy_read_timeout` | Nginx 等待並讀取 Upstream Response |
+
+Client 將 Request Body 上傳給 Nginx 的等待則屬於 `client_body_timeout`，不是 `proxy_send_timeout`。
+
+#### Timeout 通常不是總時限
+
+`proxy_send_timeout` 與 `proxy_read_timeout` 通常限制兩次連續 I/O 操作之間的等待時間。若 Upstream 每 4 秒送出一段資料，而 `proxy_read_timeout` 是 5 秒，即使整體 Response 持續 60 秒也不一定 Timeout。
+
+#### Status 與 Failure Phase
+
+本 Lab 的 Actual Results：
+
+```text
+Healthy          -> 200
+Connection Refused -> 502
+Read Timeout     -> 504
+Send Timeout     -> 504
+```
+
+Connection Refused 是 Connect Phase Failure，但不是等待 `proxy_connect_timeout` 到期；OS 立即回報 Port 無服務，因此快速得到 502。
+
+#### Send Timeout 的前置條件
+
+第一次使用 32 MiB Request Body 測試時得到 `413 Request Entity Too Large`。Request 被 `client_max_body_size` 擋下，尚未進入 Proxy Send Phase。
+
+Lab 將限制提高：
+
+```nginx
+client_max_body_size 64m;
+proxy_request_buffering off;
+proxy_send_timeout 1s;
+```
+
+之後 Nginx 才會即時將 Body 傳給「接受 Connection 但不讀資料」的 Upstream，最終觸發 Send Timeout。
+
+#### Actual Result Lab
+
+完整 Lab：[Proxy Timeouts](labs/hour-3/proxy-timeouts-experiment.md)。
+
+```text
+Result: 4/4 proxy timeout cases passed.
+```
+
+Hour 3 狀態：**完成**。Connect Failure、Slow Send、Slow Response 與 Healthy Control 均已驗證。

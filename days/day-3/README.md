@@ -6,6 +6,7 @@
 - [Hour 1：Upstream URI Matrix](labs/upstream-uri-matrix.md)
 - [Hour 1：proxy_pass URI Lab](labs/hour-1/proxy-pass-uri-experiment.md)
 - [Hour 2：Proxy Headers 與 Trust Boundary Lab](labs/hour-2/proxy-headers-experiment.md)
+- [Hour 3：Proxy Timeouts Lab](labs/hour-3/proxy-timeouts-experiment.md)
 
 本日教材會隨學習進度放在此目錄。
 

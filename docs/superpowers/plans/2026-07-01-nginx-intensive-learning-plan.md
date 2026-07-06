@@ -140,9 +140,9 @@ curl -i -H 'Host: unknown.local.test' http://127.0.0.1:8080/
 
 ### Hour 3：Timeouts
 
-- [ ] 回答 G4。
-- [ ] 分別製造 Connect Failure、Slow Request Send、Slow Upstream Response。
-- [ ] 區分 `proxy_connect_timeout`、`proxy_send_timeout`、`proxy_read_timeout`。
+- [x] 回答 G4。
+- [x] 分別製造 Connect Failure、Slow Request Send、Slow Upstream Response。
+- [x] 區分 `proxy_connect_timeout`、`proxy_send_timeout`、`proxy_read_timeout`。
 
 ### Hour 4：Buffering 與 Streaming
 
