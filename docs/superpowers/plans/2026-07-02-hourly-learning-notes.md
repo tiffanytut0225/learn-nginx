@@ -53,11 +53,11 @@ git commit -m "docs: record day 2 hour 1 learning"
 **Files:**
 - Modify: `days/day-2/notes.md`
 
-- [ ] **Step 1: Append the completed Hour section**
+- [x] **Step 1: Append the completed Hour section**
 
 After the Hour passes its planned validation, append a section containing its learning objective, core principles, actual mistakes or experimental evidence, corrected reusable mental model, and explicit completion marker.
 
-- [ ] **Step 2: Verify the new completion marker**
+- [x] **Step 2: Verify the new completion marker**
 
 Run:
 
@@ -68,7 +68,7 @@ git diff --check
 
 Expected: the newly completed Hour is listed and `git diff --check` prints no errors.
 
-- [ ] **Step 3: Commit the completed Hour**
+- [x] **Step 3: Commit the completed Hour**
 
 ```bash
 git add days/day-2/notes.md
