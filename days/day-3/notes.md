@@ -2,6 +2,33 @@
 
 ## Day 3：Reverse Proxy、Upstream 與擴展性
 
+## 今日名詞表
+
+| 名詞 | 用途 |
+|---|---|
+| Reverse Proxy | Nginx 站在 Client 與 Backend 中間，代替 Client 將 Request 轉送到後端服務。 |
+| Upstream | Nginx 背後真正提供服務的 Backend Server 或 Server Group。 |
+| `proxy_pass` | 指定某個 Location 要把 Request 轉送到哪個 Upstream，以及 URI 要如何轉換。 |
+| URI Part | `proxy_pass http://backend/xxx/` 中 Host 後面的路徑；會影響 Prefix Location 的 URI 替換。 |
+| Proxy Header | Nginx 轉送給 Backend 的 Header，例如 `Host`、`X-Real-IP`、`X-Forwarded-For`。 |
+| Trust Boundary | 判斷哪些 Header/IP 是可信來源，哪些可能由 Client 偽造。 |
+| `X-Forwarded-For` | 記錄 Client 與 Proxy Chain 的 IP 清單，但最左邊不一定可信。 |
+| `X-Forwarded-Proto` | 告訴 Backend 使用者對外原始協定是 HTTP 還是 HTTPS。 |
+| Timeout | 限制 Nginx 連後端、送 Request、等 Response 的最大等待時間。 |
+| Buffering | Nginx 是否先暫存 Upstream Response，再依 Client 速度送出。 |
+| Streaming/SSE | 後端持續逐段輸出資料，通常需要關閉 Buffering 才能即時抵達 Client。 |
+| WebSocket Upgrade | HTTP 連線升級成雙向長連線，需要明確轉送 `Upgrade` 與 `Connection` Headers。 |
+| Round-robin | 預設 Upstream 分配方式，依序輪替後端節點。 |
+| Least Connections | 將新 Request 分給目前 Active Connections 較少的節點。 |
+| Sticky / Affinity | 嘗試讓同一來源固定到同一節點，但不能取代共享 Session Store。 |
+| Keepalive | 讓 Nginx 與 Upstream 的連線可被重用，減少重複 TCP 建連成本。 |
+| DNS Resolver | 讓 Nginx 在執行期間查詢 Hostname 對應的 IP，常見於 Docker/Kubernetes 動態環境。 |
+| Retry | Upstream 失敗時，Nginx 嘗試改送下一台後端。 |
+| Idempotent | 同一個請求重做多次仍不改變最終狀態；通常較適合 Retry，例如 GET。 |
+| Non-idempotent | 重做可能造成副作用或重複寫入；POST payment/order 這類請求不能隨便 Retry。 |
+| 502 Bad Gateway | Nginx 作為 Proxy 時連不上、找不到或收到壞的 Upstream Response。 |
+| 504 Gateway Timeout | Nginx 有等待 Upstream，但 Upstream 太久沒有回應。 |
+
 ### Hour 1：`proxy_pass` URI
 
 #### 核心規則

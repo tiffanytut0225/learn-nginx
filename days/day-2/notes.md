@@ -2,6 +2,22 @@
 
 ## Day 2：Location、Static Files、SPA 與 Rewrite
 
+## 今日名詞表
+
+| 名詞 | 用途 |
+|---|---|
+| Exact Location | 用 `location = /path` 精準匹配 URI；命中後立即勝出。 |
+| Prefix Location | 用字串前綴匹配 URI；通常先找最長 Prefix。 |
+| Preferred Prefix `^~` | Prefix 命中後阻止 Regex 介入，適合保護明確路徑。 |
+| Regex Location | 用正規表示式匹配 URI；普通 Prefix 後會依設定順序檢查。 |
+| URI Normalization | Nginx 在比對 Location 前整理 URI，例如合併 `/`、解析 `.`/`..`。 |
+| Named Location | 只能由 Nginx 內部跳轉進入的 `@name`，Client 不能直接用 URI 命中。 |
+| `root` | 用「root 值 + 完整 URI」組成檔案路徑。 |
+| `alias` | 用 alias 值取代匹配的 Location Prefix，常用於把 URI 映射到不同目錄。 |
+| `try_files` | 依序檢查檔案是否存在，找不到時可回 404 或內部跳轉。 |
+| Internal Redirect | Nginx 內部重新選 Location，例如 `try_files`、`error_page`、`rewrite` 造成的流程。 |
+| SPA Fallback | 讓前端路由回到 `index.html`，但通常要避免把缺失的 asset 也錯回 HTML。 |
+
 ### Hour 1：Location Algorithm
 
 #### 學習目標

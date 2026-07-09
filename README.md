@@ -84,6 +84,8 @@ docker stop learn-nginx-day1
 
 建議不要只複製指令。真正有價值的部分，是在看到結果前先做出可被驗證的預測。
 
+每一天的學習筆記都會維護一段「今日名詞表」。如果當天開始出現大量專有名詞，先看名詞表建立用途感，再進入題目與 Lab；名詞表會優先說明「這個詞在 Nginx 裡拿來解決什麼問題」，不只翻譯英文。
+
 ## 五日學習路線
 
 - **Day 1 — 架構與 Config 骨架**：Request Lifecycle、Event-driven Model、Master/Worker、Directive Context、Server Selection、Reload 與 Logs。

@@ -2,6 +2,21 @@
 
 ## Day 1：架構、Request Lifecycle 與 Config 骨架
 
+## 今日名詞表
+
+| 名詞 | 用途 |
+|---|---|
+| DNS | 將使用者輸入的 Domain Name 解析成可連線的 IP。 |
+| TCP | 在 Client 與 Server 之間建立可靠連線，讓 HTTP Request 可以傳輸。 |
+| TLS | 在 HTTPS 中加密連線並驗證憑證，保護傳輸內容。 |
+| HTTP Request | Client 實際送給 Nginx 的 Method、URI、Headers 與 Body。 |
+| Kernel Socket | 作業系統管理網路連線、封包與 I/O 狀態的介面。 |
+| Nginx Master | 讀取設定、管理 Worker、處理 Reload 與 Process Lifecycle。 |
+| Nginx Worker | 實際接受連線、讀取 Request、選擇 Server/Location 並產生 Response。 |
+| Event Loop | 讓少量 Worker 能同時管理大量連線的非阻塞 I/O 模型。 |
+| Server Block | 根據 Listen Port、`server_name` 與 Default Server 決定 Request 進入哪個虛擬主機。 |
+| Location Block | 在選定 Server 後，決定某個 URI 要由哪段設定處理。 |
+
 ### Hour 1：Client 到 Nginx
 
 #### 學習目標

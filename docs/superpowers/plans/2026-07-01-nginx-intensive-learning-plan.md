@@ -2,7 +2,7 @@
 
 **目標：** 五天、40 小時內完成 Nginx 原理、Config、驗證與攻錯訓練。
 
-**規則：** 每項實驗都先寫 Prediction，再保存 Actual Result。每個 Fault 都記錄 Symptom、Evidence、Root Cause、Minimal Fix 與 Regression Check。
+**規則：** 每項實驗都先寫 Prediction，再保存 Actual Result。每個 Fault 都記錄 Symptom、Evidence、Root Cause、Minimal Fix 與 Regression Check。每天的 `notes.md` 都要包含「今日名詞表」，說明當天專有名詞的用途與實務判斷方式。
 
 ## Day 0：課前準備（不計時）
 
