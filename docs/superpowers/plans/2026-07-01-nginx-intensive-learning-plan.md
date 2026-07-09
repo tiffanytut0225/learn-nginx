@@ -164,9 +164,9 @@ curl -i -H 'Host: unknown.local.test' http://127.0.0.1:8080/
 
 ### Hour 7：Failure、Retry 與 DNS
 
-- [ ] 回答 G9-G11。
-- [ ] 製造 Connection Refused、Timeout、Upstream 500 與 DNS Failure。
-- [ ] 討論 Non-idempotent Request Retry 的資料風險。
+- [x] 回答 G9-G11。
+- [x] 製造 Connection Refused、Timeout、Upstream 500 與 DNS Failure。
+- [x] 討論 Non-idempotent Request Retry 的資料風險。
 
 ### Hour 8：FaceID 擴展情境與驗收
 

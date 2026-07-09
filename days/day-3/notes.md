@@ -425,3 +425,67 @@ Result: 2/2 upstream keepalive modes passed.
 誤認 Browser Keepalive 會自動延伸到 Backend。修正後將 Client 與 Upstream 視為兩組獨立 Connections。
 
 Hour 6 狀態：**完成**。HTTP Version、Connection Header 與 Upstream Connection Reuse 均已驗證。
+
+### Hour 7：Failure、Retry 與 DNS
+
+#### 故障種類與 Status
+
+Reverse Proxy 的錯誤碼判斷先問：「Nginx 是連不上、等太久，還是 Backend 自己回錯？」
+
+| 情境 | Status | 判斷方式 |
+|---|---:|---|
+| Connection Refused | 502 | Nginx 嘗試連 Upstream Port，但該 Port 沒有服務。 |
+| Slow Upstream Response | 504 | Nginx 已連上 Backend，但等待 Response Header 太久。 |
+| Upstream HTTP 500 | 500 | Backend 自己產生 500，Nginx 預設原樣轉回。 |
+| Runtime DNS Failure | 502 | Nginx 執行期間解析 Hostname 失敗，無法找到 Upstream。 |
+
+#### DNS Resolver Timeout
+
+Runtime DNS Failure 需要注意兩件事：
+
+```nginx
+resolver 127.0.0.11 valid=1s ipv6=off;
+resolver_timeout 1s;
+```
+
+`resolver` 決定 Nginx 執行期間要問誰查 DNS；`resolver_timeout` 決定查詢最多等多久。本次第一次測試沒有設定 `resolver_timeout`，Client 先超時離開，Nginx access log 顯示 `499`。加入 `resolver_timeout 1s` 後，DNS Failure 可快速回 `502`。
+
+#### Retry 與 Idempotency
+
+```nginx
+proxy_next_upstream error timeout;
+```
+
+`proxy_next_upstream` 允許 Nginx 在遇到 error 或 timeout 時改試下一台 Upstream。GET 查詢通常較適合 Retry，因為多查一次通常不改變資料狀態。
+
+但付款、建單、扣庫存這類 POST 屬於 Non-idempotent Request。若 Backend A 已經收到 Request 並執行寫入，只是 Response 太慢，Nginx 若再轉給 Backend B，可能造成重複付款或重複建單。
+
+本 Lab 中：
+
+```text
+POST /payments -> Backend A 收到一次寫入並延遲
+Nginx 等待 Response 超時 -> 504
+Backend B payments=0
+```
+
+這證明預設沒有把已送出的 POST 任意重試到下一台，避免 duplicate write。
+
+#### Actual Result Lab
+
+完整 Lab：[Failure、Retry 與 DNS](labs/hour-7/failures-retry-dns-experiment.md)。
+
+```text
+Result: 9/9 failure retry DNS cases passed.
+```
+
+#### 實際作答修正
+
+原本將 Connection Refused 判成 504、Response Timeout 判成 502、Runtime DNS Failure 判成 504。修正後的心智模型：
+
+```text
+連不上 / 找不到 upstream -> 502
+連上了但等太久 -> 504
+backend 自己回 500 -> 500
+```
+
+Hour 7 狀態：**完成**。Connection Refused、Read Timeout、Upstream 500、Runtime DNS Failure、GET Retry 與 POST Non-idempotent Retry Risk 均已驗證。
