@@ -489,3 +489,82 @@ backend 自己回 500 -> 500
 ```
 
 Hour 7 狀態：**完成**。Connection Refused、Read Timeout、Upstream 500、Runtime DNS Failure、GET Retry 與 POST Non-idempotent Retry Risk 均已驗證。
+
+### Hour 8：FaceID 擴展情境與驗收
+
+#### 架構責任分界
+
+三種常見部署方式要先分清楚「正在擴展哪一層」：
+
+```text
+A. Browser -> Nginx -> Backend
+B. Browser -> Nginx -> Backend A/B/C
+C. Browser -> External LB -> Nginx 1/2 -> Backend A/B/C
+```
+
+| 架構 | 主要用途 | 限制 |
+|---|---|---|
+| A | 最小 Reverse Proxy 架構 | Nginx 與 Backend 都可能是單點 |
+| B | 擴展 Backend 層 | Nginx 本身仍是單點 |
+| C | 擴展 Nginx 與 Backend 層 | Header、TLS Termination 與 Trust Boundary 需要更明確 |
+
+若目標是「流量變大，需要水平擴展 Nginx 本身」，應使用 External LB 或 Ingress 將流量分到多台 Nginx。
+
+#### Request Trace
+
+題目 Config：
+
+```nginx
+location /api/ {
+    proxy_set_header Host $host;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_pass http://backend/v1/;
+}
+```
+
+Client Request：
+
+```http
+GET /api/users?page=2
+Host: faceid.example.com
+```
+
+若使用者用 HTTPS 連到 Nginx，Backend 最後看到：
+
+```http
+GET /v1/users?page=2
+Host: faceid.example.com
+X-Forwarded-Proto: https
+```
+
+判斷理由：
+
+1. `/api/` 被 `proxy_pass` 的 URI Part `/v1/` 取代。
+2. `Host $host` 保留使用者原始 Host。
+3. `X-Forwarded-Proto $scheme` 傳遞 Nginx 看到的 Client-side Scheme。
+
+若 TLS 在 External LB 終止，而 LB 到 Nginx 是 HTTP，則 Nginx 的 `$scheme` 可能是 `http`。此時必須依 Trust Boundary 設計，由可信的 LB 傳入並由 Nginx 正確處理 `X-Forwarded-Proto`。
+
+#### 502 與 504 初步判斷
+
+學習者原始回答：「Nginx -> Backend 這段不通。」這是 502 的重要判斷方向。完整回答需再補上 504 的差異：
+
+```text
+502：Nginx 找不到、連不上，或無法正常跟 Backend 溝通。
+504：Nginx 有連到 Backend 並等待 Response，但 Backend 太久沒回。
+```
+
+常見 log 對照：
+
+| Log / 現象 | 初步定位 |
+|---|---|
+| `connect() failed ... while connecting to upstream` | Nginx -> Backend 連線失敗，常見 502 |
+| `host not found in upstream` / `could not be resolved` | Upstream DNS / Resolver 問題，常見 502 |
+| `upstream timed out while reading response header from upstream` | Backend 太久沒回，常見 504 |
+| Backend Response Status 是 500 | Backend 自己出錯，Nginx 預設原樣轉回 500 |
+
+#### Day 3 總驗收
+
+完整驗收整理：[Day 3 總驗收](day-3-assessment.md)。
+
+Hour 8 狀態：**完成**。已能 Trace `/api/users` 到精確 Upstream URI 與 Headers，並能用 502／504／500 與 Error Log 初步定位 Upstream Failure。

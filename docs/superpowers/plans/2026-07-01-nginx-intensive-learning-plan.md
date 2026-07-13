@@ -170,10 +170,10 @@ curl -i -H 'Host: unknown.local.test' http://127.0.0.1:8080/
 
 ### Hour 8：FaceID 擴展情境與驗收
 
-- [ ] 回答 G12。
-- [ ] 畫出單節點、多 Upstream Nodes、外部 LB／Ingress 三種責任分界。
-- [ ] Trace `/api/users` 到精確 Upstream URI 與 Headers。
-- [ ] 從 Logs 區分四種 Upstream Failures。
+- [x] 回答 G12。
+- [x] 畫出單節點、多 Upstream Nodes、外部 LB／Ingress 三種責任分界。
+- [x] Trace `/api/users` 到精確 Upstream URI 與 Headers。
+- [x] 從 Logs 區分四種 Upstream Failures。
 
 ## Day 4：HTTPS、Domain/IP 與安全（8 小時）
 

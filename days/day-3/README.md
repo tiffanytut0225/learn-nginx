@@ -11,16 +11,17 @@
 - [Hour 5：Upstream Algorithms Lab](labs/hour-5/upstream-algorithms-experiment.md)
 - [Hour 6：Upstream Keepalive Lab](labs/hour-6/upstream-keepalive-experiment.md)
 - [Hour 7：Failure、Retry 與 DNS Lab](labs/hour-7/failures-retry-dns-experiment.md)
+- [Day 3 總驗收](day-3-assessment.md)
 
-本日教材會隨學習進度放在此目錄。
+本日教材已完成 Reverse Proxy、Upstream、Timeout、Buffering、Keepalive、Retry 與 DNS Failure 的概念、實驗與驗收。
 
 ## 8 小時進度
 
-1. `proxy_pass` URI
-2. Proxy Headers 與 Trust Boundary
-3. Timeouts
-4. Buffering 與 Streaming
-5. Upstream Algorithm
-6. Upstream Keepalive
-7. Failure、Retry 與 DNS
-8. FaceID 擴展情境與驗收
+1. `proxy_pass` URI ✅
+2. Proxy Headers 與 Trust Boundary ✅
+3. Timeouts ✅
+4. Buffering 與 Streaming ✅
+5. Upstream Algorithm ✅
+6. Upstream Keepalive ✅
+7. Failure、Retry 與 DNS ✅
+8. FaceID 擴展情境與驗收 ✅
