@@ -195,10 +195,10 @@ curl -i -H 'Host: unknown.local.test' http://127.0.0.1:8080/
 
 ### Hour 4：驗證 Domain/IP 行為
 
-- [ ] Domain Cases 使用 `curl --resolve`。
-- [ ] IP Cases 直接使用 `127.0.0.1`。
-- [ ] 正常驗證 Certificate；只有隔離 Post-handshake 行為時使用 `-k`。
-- [ ] 說明 Direct-IP HTTPS 為何無法靠 Redirect 避免 Certificate Error。
+- [x] Domain Cases 使用 `curl --resolve`。
+- [x] IP Cases 直接使用 `127.0.0.1`。
+- [x] 正常驗證 Certificate；只有隔離 Post-handshake 行為時使用 `-k`。
+- [x] 說明 Direct-IP HTTPS 為何無法靠 Redirect 避免 Certificate Error。
 
 ### Hour 5：TLS Configuration
 

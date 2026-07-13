@@ -227,3 +227,41 @@ Result: 6/6 local HTTPS cases passed.
 #### Hour 3 狀態
 
 Hour 3 狀態：**完成**。已產生 development-only certificate，設定 Canonical HTTPS Server、HTTP Redirect 與 Explicit Default Server，並在啟動後通過 `nginx -t` 與 6 個 HTTPS/HTTP 驗證 cases。
+
+### Hour 4：驗證 Domain/IP 行為
+
+#### `--resolve`、Direct-IP 與 `-k`
+
+| 測試目的 | 指令方向 | 可證明什麼 |
+|---|---|---|
+| 測 domain HTTPS | `curl --resolve faceid.example.com:8443:127.0.0.1 https://faceid.example.com:8443/ --cacert cert` | SNI、Host、Certificate target 都是 `faceid.example.com` |
+| 測 direct-IP HTTPS | `curl --cacert cert https://127.0.0.1:8443/` | Certificate 是否包含 `127.0.0.1` |
+| 隔離 HTTP 層 | `curl -k https://127.0.0.1:8443/` | 忽略 certificate 驗證後，Nginx HTTP 層能否回應 |
+
+學習者回答：「用 `curl -k` 測到 200 不能代表 HTTPS 設定完全正確，因為它忽略 TLS。」這是本 Hour 的核心結論。
+
+```text
+驗證 certificate：不要用 -k
+隔離 HTTP 行為：可以用 -k，但結果不能代表 TLS 正確
+```
+
+#### Domain/IP Matrix Actual
+
+完整 Lab：[Domain/IP Matrix](labs/hour-4/domain-ip-matrix-experiment.md)。
+
+```text
+Result: 5/5 domain/IP matrix cases passed.
+```
+
+特別修正：HTTP request 打到 HTTPS port 時，Nginx 實測回：
+
+```text
+400 Bad Request
+The plain HTTP request was sent to HTTPS port
+```
+
+所以這不是 certificate mismatch，也不是 backend 問題，而是 client 使用的 URL scheme 與 port 上的 Nginx listener protocol 不匹配。
+
+#### Hour 4 狀態
+
+Hour 4 狀態：**完成**。已用 `curl --resolve` 驗證 Domain Cases、直接 IP 驗證 IP Cases，並能說明 `curl -k` 只能隔離 HTTP 層，不能證明 TLS certificate 正確。

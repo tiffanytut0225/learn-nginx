@@ -4,6 +4,7 @@
 
 - [學習筆記](notes.md)
 - [Hour 3：Local HTTPS Lab](labs/hour-3/local-https-experiment.md)
+- [Hour 4：Domain/IP Matrix Lab](labs/hour-4/domain-ip-matrix-experiment.md)
 
 本日教材會隨學習進度放在此目錄。
 
