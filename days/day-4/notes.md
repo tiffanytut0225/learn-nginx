@@ -349,3 +349,72 @@ client 不一定要自己去查 CA
 #### Hour 5 狀態
 
 Hour 5 狀態：**完成**。已能說明 Protocol、Certificate Chain、Session Reuse、OCSP Stapling 與 Cipher Policy 的責任邊界，並理解 TLS 設定應依版本與資安基準維護。
+
+### Hour 6：Security Headers
+
+#### Header 用途
+
+| Header | 用途 |
+|---|---|
+| `Content-Security-Policy` | 限制頁面可以載入哪些來源的 script、style、image、font、API 等資源，降低 XSS 與惡意資源載入風險。 |
+| `X-Content-Type-Options: nosniff` | 防止瀏覽器忽略 declared `Content-Type` 自己猜 MIME type。 |
+| `Referrer-Policy` | 控制 Browser 跳到其他網站時，`Referer` header 要帶多少來源資訊。 |
+| `Permissions-Policy` | 控制 camera、microphone、geolocation、payment 等瀏覽器功能權限。 |
+| `X-Frame-Options` / CSP `frame-ancestors` | 降低網站被 iframe 嵌入造成 clickjacking 的風險。 |
+| HSTS | 要求瀏覽器未來固定使用 HTTPS；不是 TLS 設定本身，但常與 HTTPS 安全策略一起規劃。 |
+
+#### CSP
+
+```http
+Content-Security-Policy: default-src 'self'; script-src 'self'
+```
+
+CSP 主要降低 XSS 風險，但它也最容易破壞前端功能。若頁面需要第三方 SDK、CDN、inline style、font、image 或 API endpoint，CSP 必須依實際需求設計。
+
+#### MIME Sniffing
+
+```http
+X-Content-Type-Options: nosniff
+```
+
+用途是讓瀏覽器不要自行猜測 MIME type。若 server 回錯 `Content-Type`，正確修法是修 response header，而不是移除 `nosniff`。
+
+#### Referrer 與 Permissions
+
+`Referrer-Policy` 用來減少敏感 URL/path/query 被外部網站透過 `Referer` 看到。常見平衡設定：
+
+```http
+Referrer-Policy: strict-origin-when-cross-origin
+```
+
+`Permissions-Policy` 則是限制瀏覽器能力，例如：
+
+```http
+Permissions-Policy: camera=(), geolocation=(), microphone=()
+```
+
+#### Clickjacking
+
+防 clickjacking 可使用：
+
+```http
+X-Frame-Options: DENY
+```
+
+或使用 CSP：
+
+```http
+Content-Security-Policy: frame-ancestors 'self'
+```
+
+若產品需要被合法 iframe 嵌入，不能直接全站 `DENY`，需明確列出允許來源。
+
+#### Compatibility Cost
+
+學習者回答：「Security Headers 不能只貼最嚴格設定，因為可能破壞前端功能、第三方資源、iframe、登入流程或瀏覽器相容性。」這是本 Hour 核心。
+
+完整 Policy Matrix：[Security Headers Policy Matrix](labs/hour-6/security-headers-policy.md)。
+
+#### Hour 6 狀態
+
+Hour 6 狀態：**完成**。已能說明 CSP、`nosniff`、Referrer-Policy、Permissions-Policy、Frame Protection 與 HSTS 的目的與 compatibility cost。

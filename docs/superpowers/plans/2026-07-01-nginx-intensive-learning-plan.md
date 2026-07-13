@@ -207,9 +207,9 @@ curl -i -H 'Host: unknown.local.test' http://127.0.0.1:8080/
 
 ### Hour 6：Security Headers
 
-- [ ] 回答 H1-H3。
-- [ ] 評估 CSP、X-Content-Type-Options、Referrer-Policy、Permissions-Policy、Frame Protection。
-- [ ] 每項都記錄目的與 Compatibility Cost。
+- [x] 回答 H1-H3。
+- [x] 評估 CSP、X-Content-Type-Options、Referrer-Policy、Permissions-Policy、Frame Protection。
+- [x] 每項都記錄目的與 Compatibility Cost。
 
 ### Hour 7：Limits 與 Rate Limiting
 
