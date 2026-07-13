@@ -265,3 +265,87 @@ The plain HTTP request was sent to HTTPS port
 #### Hour 4 狀態
 
 Hour 4 狀態：**完成**。已用 `curl --resolve` 驗證 Domain Cases、直接 IP 驗證 IP Cases，並能說明 `curl -k` 只能隔離 HTTP 層，不能證明 TLS certificate 正確。
+
+### Hour 5：TLS Configuration
+
+#### TLS 設定不要只背值，要知道責任
+
+| 設定／概念 | 負責什麼 |
+|---|---|
+| `ssl_protocols` | 允許哪些 TLS protocol versions，例如 TLS 1.2 / TLS 1.3。 |
+| Cipher Suite | 決定加密、金鑰交換與驗證演算法組合。 |
+| `ssl_certificate` | Server 送給 Client 的 certificate chain；Production 通常應使用 fullchain。 |
+| `ssl_certificate_key` | 對應 certificate 的 private key；不可 commit 到 repo。 |
+| Session Reuse / Resumption | 減少重複 TLS handshake 的成本。 |
+| OCSP | Client 查詢 certificate 是否被撤銷的機制。 |
+| OCSP Stapling | Server 先附上 certificate revocation status，減少 client 自己查 CA。 |
+
+#### Protocol Version
+
+```nginx
+ssl_protocols TLSv1.2 TLSv1.3;
+```
+
+這控制 Client 可以使用哪些 TLS 版本與 Nginx 建立 HTTPS 連線。它不控制 certificate 包含哪些 domain，也不控制 HTTP redirect 或 backend upstream。
+
+#### Certificate Chain
+
+若瀏覽器或 client 顯示：
+
+```text
+certificate chain incomplete
+unable to get local issuer certificate
+```
+
+常見原因是 Nginx 沒有送出完整中繼憑證鏈。Production 中 `ssl_certificate` 通常應指向 fullchain：
+
+```nginx
+ssl_certificate /path/to/fullchain.pem;
+ssl_certificate_key /path/to/private.key;
+```
+
+Chain 的目標是讓 client 能一路驗證：
+
+```text
+網站憑證 -> Intermediate CA -> Root CA
+```
+
+#### Session Reuse / Resumption
+
+Session reuse / resumption 的目標是減少重複 TLS handshake 的成本。它不會修復錯誤憑證，也不會讓 POST retry 變安全。
+
+心智模型：
+
+```text
+HTTPS 不要每次都從零開始握手
+```
+
+#### OCSP Stapling
+
+OCSP 用於查詢 certificate 是否被撤銷。OCSP Stapling 則是 Nginx 先取得 OCSP response，並在 TLS handshake 時附給 client。
+
+用途：
+
+```text
+client 不一定要自己去查 CA
+減少額外查詢延遲
+也降低 client 對外查詢造成的隱私暴露
+```
+
+但 OCSP Stapling 需要 certificate chain、resolver、`ssl_stapling`、`ssl_stapling_verify` 等設定搭配，不是單純打開一個 directive 就代表完整正確。
+
+#### Cipher Policy
+
+不建議硬背一串 cipher list。Cipher policy 會隨著以下因素改變：
+
+- Nginx 版本
+- OpenSSL 版本
+- 組織資安基準
+- 法規或稽核要求
+- Client 相容性需求
+
+實務上應依組織基準與版本維護，而不是把網路文章中的 cipher list 永久複製進 production config。
+
+#### Hour 5 狀態
+
+Hour 5 狀態：**完成**。已能說明 Protocol、Certificate Chain、Session Reuse、OCSP Stapling 與 Cipher Policy 的責任邊界，並理解 TLS 設定應依版本與資安基準維護。

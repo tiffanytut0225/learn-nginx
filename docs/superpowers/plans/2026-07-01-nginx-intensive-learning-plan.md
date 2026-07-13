@@ -202,8 +202,8 @@ curl -i -H 'Host: unknown.local.test' http://127.0.0.1:8080/
 
 ### Hour 5：TLS Configuration
 
-- [ ] 研究 Protocol、Certificate Chain、Session Reuse 與 OCSP 的責任。
-- [ ] 不固定背誦 Cipher List；記錄如何依組織基準與版本維護。
+- [x] 研究 Protocol、Certificate Chain、Session Reuse 與 OCSP 的責任。
+- [x] 不固定背誦 Cipher List；記錄如何依組織基準與版本維護。
 
 ### Hour 6：Security Headers
 
