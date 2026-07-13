@@ -6,6 +6,7 @@
 - [Hour 3：Local HTTPS Lab](labs/hour-3/local-https-experiment.md)
 - [Hour 4：Domain/IP Matrix Lab](labs/hour-4/domain-ip-matrix-experiment.md)
 - [Hour 6：Security Headers Policy Matrix](labs/hour-6/security-headers-policy.md)
+- [Hour 7：Limits 與 Rate Limiting Lab](labs/hour-7/limits-rate-experiment.md)
 
 本日教材會隨學習進度放在此目錄。
 

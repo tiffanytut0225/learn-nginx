@@ -213,8 +213,8 @@ curl -i -H 'Host: unknown.local.test' http://127.0.0.1:8080/
 
 ### Hour 7：Limits 與 Rate Limiting
 
-- [ ] 測試 `client_max_body_size`、Connection Limit、Request Rate Limit、Timeout。
-- [ ] 記錄 Status Code、Log 與對正常流量的影響。
+- [x] 測試 `client_max_body_size`、Connection Limit、Request Rate Limit、Timeout。
+- [x] 記錄 Status Code、Log 與對正常流量的影響。
 
 ### Hour 8：攻錯與驗收
 

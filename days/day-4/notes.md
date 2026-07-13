@@ -418,3 +418,55 @@ Content-Security-Policy: frame-ancestors 'self'
 #### Hour 6 狀態
 
 Hour 6 狀態：**完成**。已能說明 CSP、`nosniff`、Referrer-Policy、Permissions-Policy、Frame Protection 與 HSTS 的目的與 compatibility cost。
+
+### Hour 7：Limits 與 Rate Limiting
+
+#### 入口保護類型
+
+| Directive / Concept | 控制什麼 | 常見 Status |
+|---|---|---:|
+| `client_max_body_size` | Request body 最大大小 | 413 |
+| `client_body_timeout` | Client 傳 body 太慢 | 408 |
+| `client_header_timeout` | Client 傳 header 太慢 | 408 |
+| `limit_req` | 單位時間 request rate | 429（本 Lab 自訂） |
+| `limit_conn` | 同一 key 同時 active connections | 429（本 Lab 自訂） |
+| `burst` | 短時間突發 request 的排隊／容忍空間 | 依是否超過 burst |
+
+#### 413 vs 504
+
+學習者原始回答：「504 表示 server 掛掉了，413 表示 server 還在只是不接受 request。」其中 413 的方向正確，但 504 不一定代表 server 掛掉。
+
+完整心智模型：
+
+```text
+413 = client 給太大，Nginx 入口擋下，通常還沒送到 backend
+504 = Nginx 有等 backend，但 backend 太久沒回
+502 = backend 掛掉、port 不通、DNS/upstream 溝通失敗時更常見
+```
+
+#### Rate vs Connection
+
+```nginx
+limit_req_zone $binary_remote_addr zone=api_rate:10m rate=1r/s;
+limit_req_status 429;
+
+limit_conn_zone $binary_remote_addr zone=per_ip_conn:10m;
+limit_conn_status 429;
+```
+
+`limit_req` 限制的是 request rate，例如每秒幾個 requests。`limit_conn` 限制的是同時 active connections，例如同一 IP 同時最多幾條連線。
+
+#### Actual Result Lab
+
+完整 Lab：[Limits 與 Rate Limiting](labs/hour-7/limits-rate-experiment.md)。
+
+```text
+nginx: configuration file /etc/nginx/nginx.conf test is successful
+Result: 6/6 limit and rate cases passed.
+```
+
+Debug note：第一次將 `/rate` 用 `return 200` 實作時，沒有觀察到 `limit_req` 拒絕第二個 request。改成 proxy 到測試 upstream 後，第二個立即 request 正常得到 `429`。這提醒我們：做 Nginx 行為實驗時，content handler 與 phase 會影響能否觀察到某些 directive。
+
+#### Hour 7 狀態
+
+Hour 7 狀態：**完成**。已驗證 `client_max_body_size`、`limit_req`、`limit_conn` 的 Status Code 與正常流量影響，並能區分 413、429 與 504 的故障層次。
