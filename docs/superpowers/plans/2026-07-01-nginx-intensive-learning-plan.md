@@ -184,8 +184,8 @@ curl -i -H 'Host: unknown.local.test' http://127.0.0.1:8080/
 
 ### Hour 2：Request Matrix
 
-- [ ] 建立 HTTP Domain、HTTPS Domain、HTTP Unknown Host、HTTPS Unknown SNI/Host、HTTP IP、HTTPS IP Matrix。
-- [ ] 將 Certificate Result 與 HTTP Status 分開預測。
+- [x] 建立 HTTP Domain、HTTPS Domain、HTTP Unknown Host、HTTPS Unknown SNI/Host、HTTP IP、HTTPS IP Matrix。
+- [x] 將 Certificate Result 與 HTTP Status 分開預測。
 
 ### Hour 3：Local HTTPS Lab
 

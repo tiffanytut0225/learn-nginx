@@ -95,3 +95,66 @@ Nginx 看到的 `$scheme` 是 `http`，不是使用者外部原始的 `https`。
 #### Hour 1 狀態
 
 Hour 1 狀態：**完成**。已能說明 TCP → TLS/SNI/Certificate → HTTP Host → Redirect 的順序，並能解釋 Direct-IP HTTPS 為何不能靠 Redirect 解決 certificate mismatch。
+
+### Hour 2：Request Matrix
+
+#### 為什麼要分開 Certificate Result 與 HTTP Status
+
+學習者回答：「TLS Certificate Result 只有 HTTPS 可以用。」這是正確起點。完整心智模型是：
+
+```text
+HTTP request:
+  TCP -> HTTP Host -> HTTP Status
+  沒有 TLS Certificate Result
+
+HTTPS request:
+  TCP -> TLS/SNI/Certificate Result
+      -> TLS 成功後才有 HTTP Host
+      -> HTTP Status
+```
+
+因此 Day 4 的 Request Matrix 要分開記：
+
+| 欄位 | 用途 |
+|---|---|
+| TLS Certificate Result | 只存在於 HTTPS；判斷 SNI/URL hostname 是否與憑證匹配。 |
+| HTTP Status | TLS 成功後才看得到；判斷 Nginx server/location/redirect/backend 結果。 |
+
+如果 HTTPS 憑證驗證已經失敗，正常瀏覽器不會繼續進入 HTTP，因此不能同時說「certificate mismatch 但 HTTP 301 成功救回」。只有在測試時刻意使用 `curl -k` 忽略憑證錯誤，才是在隔離觀察 post-handshake 的 HTTP 行為。
+
+#### Request Matrix 判斷
+
+假設憑證只包含：
+
+```text
+faceid.example.com
+```
+
+| Request | TLS Certificate Result | HTTP 階段 |
+|---|---|---|
+| `https://faceid.example.com/` | 通過，hostname 與 certificate name 匹配 | TLS 通過後才進 HTTP；是否 redirect/回 content 要看 config |
+| `https://127.0.0.1/` | 失敗，certificate 不包含 `127.0.0.1` | 正常瀏覽器不會先看到 HTTP redirect/status |
+| `http://faceid.example.com/` | 不適用，HTTP 沒有 TLS | 直接進 HTTP，可由 Nginx 回 content 或 redirect |
+| `https://unknown.example.com/` | 通常失敗，certificate 不包含 unknown hostname | 若用 `curl -k` 才能繼續觀察 Host `unknown.example.com` 落到哪個 server |
+
+#### `curl --resolve`
+
+本機測試 domain 對到指定 IP 時，使用：
+
+```bash
+curl --resolve faceid.example.com:443:127.0.0.1 https://faceid.example.com/
+```
+
+用途是「連線 IP 指到本機，但 URL hostname 保留 `faceid.example.com`」。因此 SNI、HTTP Host 與 Certificate 驗證目標都仍是 `faceid.example.com`。
+
+直接使用：
+
+```bash
+curl https://127.0.0.1/
+```
+
+則是在測 Direct-IP HTTPS，SNI/Host/Certificate 驗證目標都會偏向 `127.0.0.1`，若憑證沒有包含 IP，會遇到 certificate name mismatch。
+
+#### Hour 2 狀態
+
+Hour 2 狀態：**完成**。已能將 HTTP/HTTPS、Domain/IP、Unknown Host 的 TLS Certificate Result 與 HTTP Status 分開預測。
