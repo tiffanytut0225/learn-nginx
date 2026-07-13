@@ -158,3 +158,72 @@ curl https://127.0.0.1/
 #### Hour 2 狀態
 
 Hour 2 狀態：**完成**。已能將 HTTP/HTTPS、Domain/IP、Unknown Host 的 TLS Certificate Result 與 HTTP Status 分開預測。
+
+### Hour 3：Local HTTPS Lab
+
+#### Lab 目標
+
+建立一個 development-only HTTPS Nginx，驗證：
+
+| Case | 結果 |
+|---|---|
+| `https://faceid.example.com/` 搭配 `curl --resolve` 與信任 dev cert | TLS certificate 通過，HTTP `200` |
+| `http://faceid.example.com/` 搭配 `curl --resolve` | HTTP `301` redirect 到 `https://faceid.example.com/` |
+| `https://127.0.0.1/` 搭配信任 dev cert | certificate name mismatch，curl exit `60` |
+
+#### Development-only Certificate
+
+憑證 SAN 只包含：
+
+```text
+DNS:faceid.example.com
+```
+
+因此它可以證明 `faceid.example.com`，但不能證明 `127.0.0.1`。這讓 Lab 能明確驗證：
+
+```text
+domain HTTPS 正常
+direct-IP HTTPS 憑證驗證失敗
+```
+
+#### Nginx Config
+
+HTTP server：
+
+```nginx
+server {
+    listen 80 default_server;
+    server_name faceid.example.com;
+
+    return 301 https://faceid.example.com$request_uri;
+}
+```
+
+HTTPS server：
+
+```nginx
+server {
+    listen 443 ssl default_server;
+    server_name faceid.example.com;
+
+    ssl_certificate /etc/nginx/certs/faceid.example.com.crt;
+    ssl_certificate_key /etc/nginx/certs/faceid.example.com.key;
+
+    location / {
+        return 200 "secure faceid site\n";
+    }
+}
+```
+
+#### Actual Result Lab
+
+完整 Lab：[Local HTTPS](labs/hour-3/local-https-experiment.md)。
+
+```text
+nginx: configuration file /etc/nginx/nginx.conf test is successful
+Result: 6/6 local HTTPS cases passed.
+```
+
+#### Hour 3 狀態
+
+Hour 3 狀態：**完成**。已產生 development-only certificate，設定 Canonical HTTPS Server、HTTP Redirect 與 Explicit Default Server，並在啟動後通過 `nginx -t` 與 6 個 HTTPS/HTTP 驗證 cases。

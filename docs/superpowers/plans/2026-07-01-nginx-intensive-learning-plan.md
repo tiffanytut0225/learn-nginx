@@ -189,9 +189,9 @@ curl -i -H 'Host: unknown.local.test' http://127.0.0.1:8080/
 
 ### Hour 3：Local HTTPS Lab
 
-- [ ] 產生 Development-only Certificate。
-- [ ] 設定 Canonical HTTPS Server、HTTP Redirect 與 Explicit Default Server。
-- [ ] 啟動前執行 `nginx -t`。
+- [x] 產生 Development-only Certificate。
+- [x] 設定 Canonical HTTPS Server、HTTP Redirect 與 Explicit Default Server。
+- [x] 啟動前執行 `nginx -t`。
 
 ### Hour 4：驗證 Domain/IP 行為
 

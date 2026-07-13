@@ -3,6 +3,7 @@
 ## 今日教材
 
 - [學習筆記](notes.md)
+- [Hour 3：Local HTTPS Lab](labs/hour-3/local-https-experiment.md)
 
 本日教材會隨學習進度放在此目錄。
 
