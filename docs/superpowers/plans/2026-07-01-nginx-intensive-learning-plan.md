@@ -179,8 +179,8 @@ curl -i -H 'Host: unknown.local.test' http://127.0.0.1:8080/
 
 ### Hour 1：TLS、SNI 與 Host
 
-- [ ] 回答 D3-D6。
-- [ ] 寫出 TCP → TLS/SNI/Certificate → HTTP Host → Redirect 的順序。
+- [x] 回答 D3-D6。
+- [x] 寫出 TCP → TLS/SNI/Certificate → HTTP Host → Redirect 的順序。
 
 ### Hour 2：Request Matrix
 
