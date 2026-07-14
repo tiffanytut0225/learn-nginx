@@ -141,3 +141,100 @@ Thread pool 不能直接解決：
 #### Hour 2 狀態
 
 Hour 2 狀態：**完成**。已盤點 File I/O、DNS、Upstream、Logging 與 Third-party Module 的 blocking risk，並能說明 Thread Pool 適用於部分 file I/O，但不能修復 backend app 緩慢。
+
+### Hour 3：Keepalive、Buffering 與 Compression
+
+#### 三種效能工具的取捨
+
+| 機制 | 主要好處 | 主要代價 |
+|---|---|---|
+| Keepalive | 重用 connection，減少 TCP/TLS 重複建連成本 | Idle connections 仍占 connection slot、FD、memory |
+| Buffering | Nginx 先接住 upstream response，隔離慢 client 對 backend 的影響 | 消耗 memory；大 response 可能用 temporary file；不適合即時 streaming |
+| Compression | 用 CPU 換較小傳輸量，降低 network bandwidth | 消耗 CPU；對已壓縮格式收益低 |
+
+#### Keepalive
+
+Keepalive 的主要好處：
+
+```text
+減少重複 TCP/TLS handshake 成本
+```
+
+但 `keepalive_timeout` 不是越長越好：
+
+```text
+太短 -> 重複建連成本增加
+太長 -> idle connections 占用 connection slot / FD / memory
+```
+
+#### Buffering
+
+Proxy buffering 開啟時：
+
+```text
+Backend 快速吐 response
+-> Nginx 暫存
+-> Backend connection 可較早釋放
+-> Nginx 依 client 速度送出
+```
+
+它能降低慢 client 長時間占用 backend connection 的風險。
+
+但 SSE / streaming 通常不適合 buffering，因為它需要資料即時送到 client：
+
+```nginx
+proxy_buffering off;
+```
+
+或由 upstream 回：
+
+```http
+X-Accel-Buffering: no
+```
+
+#### Compression
+
+Compression 的 trade-off：
+
+```text
+用 CPU 換取較小傳輸量
+```
+
+通常適合：
+
+- HTML
+- CSS
+- JavaScript
+- JSON
+- Text
+
+通常不適合或收益很低：
+
+- JPG / PNG / WebP
+- MP4
+- ZIP / gzip 已壓縮檔
+
+#### 為什麼不能只問最佳設定值
+
+學習者回答：「跟硬體關係較大。」這是其中一部分。完整來說，最佳設定取決於：
+
+- CPU
+- Memory
+- Disk I/O
+- Network bandwidth
+- Client 數量與速度
+- Request 間隔
+- Response 大小與格式
+- Backend connection 成本
+- 是否有 streaming / long-lived connections
+- TLS 與 compression 成本
+
+心智模型：
+
+```text
+效能設定沒有唯一最佳值，只有在特定 workload 和資源限制下的取捨。
+```
+
+#### Hour 3 狀態
+
+Hour 3 狀態：**完成**。已能以 Request Lifecycle 說明 Keepalive、Buffering 與 Compression 如何影響 CPU、Memory、Connections 與 Latency，並理解不能以單一「最佳值」取代量測。

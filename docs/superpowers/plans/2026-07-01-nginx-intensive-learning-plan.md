@@ -236,8 +236,8 @@ curl -i -H 'Host: unknown.local.test' http://127.0.0.1:8080/
 
 ### Hour 3：Keepalive、Buffering 與 Compression
 
-- [ ] 以 Request Lifecycle 說明三者如何影響 CPU、Memory、Connections 與 Latency。
-- [ ] 不以單一「最佳值」取代量測。
+- [x] 以 Request Lifecycle 說明三者如何影響 CPU、Memory、Connections 與 Latency。
+- [x] 不以單一「最佳值」取代量測。
 
 ### Hour 4：Observability
 
