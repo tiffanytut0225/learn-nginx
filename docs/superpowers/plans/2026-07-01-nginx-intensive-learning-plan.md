@@ -218,8 +218,8 @@ curl -i -H 'Host: unknown.local.test' http://127.0.0.1:8080/
 
 ### Hour 8：攻錯與驗收
 
-- [ ] 診斷 Wrong Certificate、Unknown Host 落入正式站台、Redirect 使用不可信 Host、HSTS 誤用、Security Header 衝突。
-- [ ] 正確解釋六種 Domain/IP/TLS Cases。
+- [x] 診斷 Wrong Certificate、Unknown Host 落入正式站台、Redirect 使用不可信 Host、HSTS 誤用、Security Header 衝突。
+- [x] 正確解釋六種 Domain/IP/TLS Cases。
 
 ## Day 5：併發、效能、Observability 與總攻錯（8 小時）
 

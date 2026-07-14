@@ -470,3 +470,42 @@ Debug note：第一次將 `/rate` 用 `return 200` 實作時，沒有觀察到 `
 #### Hour 7 狀態
 
 Hour 7 狀態：**完成**。已驗證 `client_max_body_size`、`limit_req`、`limit_conn` 的 Status Code 與正常流量影響，並能區分 413、429 與 504 的故障層次。
+
+### Hour 8：攻錯與驗收
+
+#### Day 4 分層攻錯
+
+```text
+TLS 還沒過 -> 不要先談 HTTP status / redirect / location
+TLS 過了 -> 才看 Host / server block / location / headers
+HTTP 過了 -> 才看 backend / upstream
+```
+
+#### 常見故障定位
+
+| 現象 | 優先判斷 |
+|---|---|
+| `https://127.0.0.1:8443/` certificate warning | Certificate SAN 不包含 `127.0.0.1` |
+| `curl -k https://127.0.0.1:8443/` 得到 200 | 忽略憑證驗證後，HTTP 層可以回 200 |
+| `return 301 https://$host$request_uri;` 面對 public internet | Client 可用惡意 Host header 影響 redirect `Location` |
+| Unknown Host 進正式站 | 檢查 `default_server` / `server_name` 設計 |
+| HSTS `includeSubDomains; preload` | 影響範圍大，錯設可能造成長期 HTTPS 故障 |
+
+#### `curl -k` 驗收回答
+
+學習者回答：「`curl -k` 會跳過 HTTPS 的憑證檢查。」這是 Day 4 驗收核心。
+
+完整回答：
+
+```text
+curl -k 會跳過 HTTPS certificate verification。
+所以看到 200 只能代表忽略憑證錯誤後，HTTP 層可以回應。
+它不能證明 hostname、certificate SAN、certificate chain 都正確。
+正式驗證 HTTPS 時，不能只用 -k。
+```
+
+#### Day 4 總驗收
+
+完整驗收整理：[Day 4 總驗收](day-4-assessment.md)。
+
+Hour 8 狀態：**完成**。已能診斷 Wrong Certificate、Unknown Host、Untrusted Host Redirect、HSTS 誤用、Security Header Compatibility Cost，並能正確解釋 Domain/IP/TLS Cases。
