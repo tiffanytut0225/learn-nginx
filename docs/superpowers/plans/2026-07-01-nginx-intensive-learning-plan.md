@@ -247,9 +247,9 @@ curl -i -H 'Host: unknown.local.test' http://127.0.0.1:8080/
 
 ### Hour 5：小型行為測試
 
-- [ ] 比較 Short-lived 與 Keepalive Requests。
-- [ ] 記錄指令、環境限制、Errors、Latency 與 Resource Observation。
-- [ ] 明確註明結果不是 Production Benchmark。
+- [x] 比較 Short-lived 與 Keepalive Requests。
+- [x] 記錄指令、環境限制、Errors、Latency 與 Resource Observation。
+- [x] 明確註明結果不是 Production Benchmark。
 
 ### Hour 6：Graceful Operations
 

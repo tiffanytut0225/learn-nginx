@@ -309,3 +309,38 @@ upstream 回什麼、各階段花多久，
 #### Hour 4 狀態
 
 Hour 4 狀態：**完成**。已設計包含 Request ID、Host、Status、Request Time、Upstream Address、Upstream Status、Connect/Header/Response Time 的 log format，並記錄避免 Token、Cookie 與 Sensitive Query Data 的原則。
+
+### Hour 5：小型行為測試
+
+#### 測試目的
+
+比較 short-lived upstream requests 與 upstream keepalive requests 的連線重用差異。
+
+這是本機行為觀察，不是 production benchmark。它能證明 connection reuse 行為，但不能代表 production latency、throughput 或 capacity。
+
+#### 方法
+
+Backend 回傳它看到的 Nginx source port：
+
+```text
+client_port=xxxxx
+```
+
+若每次都新建 upstream connection，backend 會看到不同 source ports。若 upstream keepalive 重用同一條 connection，backend 會看到相同 source port。
+
+#### Actual Result Lab
+
+完整 Lab：[Short-lived vs Keepalive](labs/hour-5/keepalive-behavior-experiment.md)。
+
+```text
+Short-lived -> 50913 50915 50917 50919
+Keepalive   -> 50889 50889 50889 50889
+
+Result: 2/2 keepalive behavior checks passed.
+```
+
+Port 數字會依環境改變；判讀重點是「多個不同 ports」與「同一個 port 被重用」。
+
+#### Hour 5 狀態
+
+Hour 5 狀態：**完成**。已比較 Short-lived 與 Keepalive Requests，記錄指令、環境限制與行為觀察，並明確註明此結果不是 Production Benchmark。
