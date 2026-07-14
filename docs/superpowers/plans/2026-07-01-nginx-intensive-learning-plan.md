@@ -225,9 +225,9 @@ curl -i -H 'Host: unknown.local.test' http://127.0.0.1:8080/
 
 ### Hour 1：Worker 與 Connection Capacity
 
-- [ ] 回答 B8-B10。
-- [ ] 建立 `days/day-5/labs/capacity-worksheet.md`。
-- [ ] 包含 CPU、Workers、Worker Connections、File Descriptors、Client/Upstream Ratio、Keepalive、Memory。
+- [x] 回答 B8-B10。
+- [x] 建立 `days/day-5/labs/hour-1/capacity-worksheet.md`。
+- [x] 包含 CPU、Workers、Worker Connections、File Descriptors、Client/Upstream Ratio、Keepalive、Memory。
 
 ### Hour 2：Blocking 與 Thread Pool
 
