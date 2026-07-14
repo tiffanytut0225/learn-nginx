@@ -259,9 +259,9 @@ curl -i -H 'Host: unknown.local.test' http://127.0.0.1:8080/
 
 ### Hour 7：完整 Config Attack Review
 
-- [ ] 使用 `docs/nginx-review-checklist.md` 審查 Sanitized FaceID Config 或 Flawed Config。
-- [ ] Findings 分為 Confirmed Defect、Contextual Risk、Hardening Opportunity、Need Context。
-- [ ] 每項包含 Evidence 與 Verification Method。
+- [x] 使用 `docs/nginx-review-checklist.md` 審查 Sanitized FaceID Config 或 Flawed Config。
+- [x] Findings 分為 Confirmed Defect、Contextual Risk、Hardening Opportunity、Need Context。
+- [x] 每項包含 Evidence 與 Verification Method。
 
 ### Hour 8：總驗收與主管簡報
 

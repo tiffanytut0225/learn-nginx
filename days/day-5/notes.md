@@ -401,3 +401,58 @@ reload 後用 response/header/log 驗證已回到上一版
 #### Hour 6 狀態
 
 Hour 6 狀態：**完成**。已練習 Config Test、Graceful Reload、Rollback Reload，並寫出安全變更步驟與 rollback check。
+
+### Hour 7：完整 Config Attack Review
+
+#### Finding 分類
+
+| 分類 | 意思 |
+|---|---|
+| Confirmed Defect | 已能從 config / lab 明確證明會出錯的問題。 |
+| Contextual Risk | 嚴重程度取決於部署拓撲、trust boundary 或產品需求。 |
+| Hardening Opportunity | 目前不一定錯，但可以加強安全、穩定或可觀測性。 |
+| Need Context | 缺少資訊，不能可靠判斷，需要詢問或查證。 |
+
+#### Review 原則
+
+學習者回答：「要寫 Evidence 和 Verification Method，才能確定錯誤的方向。」這是本 Hour 核心。
+
+完整化後：
+
+```text
+Evidence 讓 finding 不是憑感覺猜。
+Verification Method 讓修正後能證明問題真的解決。
+```
+
+#### Review Checklist
+
+新增全域 checklist：[Nginx Config Review Checklist](../../docs/nginx-review-checklist.md)。
+
+每個 finding 至少包含：
+
+- Category
+- Evidence
+- Impact
+- Minimal Fix / Recommendation
+- Verification Method
+- Needed Context, if any
+
+#### Attack Review Lab
+
+完整 Review：[Config Attack Review](labs/hour-7/config-attack-review.md)。
+
+Review target：[flawed-nginx.conf](labs/hour-7/flawed-nginx.conf)。
+
+主要 findings：
+
+- Undefined upstream `backend`。
+- Access log 記錄 Authorization、Cookie 與完整 query string。
+- Redirect 使用不可信 `$host`。
+- Production HTTPS server 同時是 `default_server`。
+- HSTS `includeSubDomains; preload` 風險。
+- Security Headers 需要依服務型態補 context。
+- `X-Forwarded-For` trust boundary 不明確。
+
+#### Hour 7 狀態
+
+Hour 7 狀態：**完成**。已建立 review checklist，使用 flawed config 完成 attack review，並將 findings 分為 Confirmed Defect、Contextual Risk、Hardening Opportunity 與 Need Context，每項包含 Evidence 與 Verification Method。
