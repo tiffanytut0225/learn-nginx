@@ -456,3 +456,44 @@ Review target：[flawed-nginx.conf](labs/hour-7/flawed-nginx.conf)。
 #### Hour 7 狀態
 
 Hour 7 狀態：**完成**。已建立 review checklist，使用 flawed config 完成 attack review，並將 findings 分為 Confirmed Defect、Contextual Risk、Hardening Opportunity 與 Need Context，每項包含 Evidence 與 Verification Method。
+
+### Hour 8：總驗收與主管簡報
+
+#### 15 分鐘 Walkthrough
+
+完整簡報稿：[主管簡報 Walkthrough](labs/hour-8/final-walkthrough.md)。
+
+建議結構：
+
+1. Request Lifecycle。
+2. Location Fault。
+3. Proxy Failure。
+4. Domain / IP / TLS。
+5. Capacity 與 Performance。
+6. Observability 與 Operations。
+7. Config Review。
+
+一句話總結：
+
+```text
+我現在看 Nginx 問題會先分層，再用 response、logs、nginx -t 和最小 request 驗證，不會只憑感覺猜。
+```
+
+#### 未知 Config Case
+
+完整 case：[Day 5 總驗收](day-5-assessment.md#現場未知-config-case)。
+
+現場流程：
+
+```text
+Prediction
+-> Request
+-> Log / Evidence
+-> Root Cause
+-> Minimal Fix
+-> Regression Check
+```
+
+#### Hour 8 狀態
+
+Hour 8 狀態：**完成**。已準備 15 分鐘 Walkthrough，並完成未知 Config Case 的 Prediction → Request → Log → Root Cause → Fix → Regression Check 演練。

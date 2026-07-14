@@ -265,18 +265,18 @@ curl -i -H 'Host: unknown.local.test' http://127.0.0.1:8080/
 
 ### Hour 8：總驗收與主管簡報
 
-- [ ] 準備 15 分鐘 Walkthrough：Request Lifecycle、Location Fault、Proxy Failure、Domain/IP/TLS、Capacity、Config Review。
-- [ ] 現場完成一個未知 Config Case 的 Prediction → Request → Log → Root Cause → Fix。
+- [x] 準備 15 分鐘 Walkthrough：Request Lifecycle、Location Fault、Proxy Failure、Domain/IP/TLS、Capacity、Config Review。
+- [x] 現場完成一個未知 Config Case 的 Prediction → Request → Log → Root Cause → Fix。
 
 ## 完成條件
 
-- [ ] AI 問題清單已完成主管審查或記錄 Review Status。
-- [ ] 所有 Lab Config 通過 `nginx -t`。
-- [ ] 每個 Matrix 同時保留 Prediction 與 Actual Result。
-- [ ] 每個 Fault 都有 Evidence、Root Cause、Minimal Fix、Regression Check。
-- [ ] 能區分 Syntax、Routing、Filesystem、TLS、DNS、Connection、Timeout、Upstream Failure。
-- [ ] 能解釋 Worker／Connection Capacity，而非背誦設定值。
-- [ ] Final Checklist 可用於陌生 Nginx Config。
+- [x] AI 問題清單已完成主管審查或記錄 Review Status。
+- [x] 所有 Lab Config 通過 `nginx -t`。
+- [x] 每個 Matrix 同時保留 Prediction 與 Actual Result。
+- [x] 每個 Fault 都有 Evidence、Root Cause、Minimal Fix、Regression Check。
+- [x] 能區分 Syntax、Routing、Filesystem、TLS、DNS、Connection、Timeout、Upstream Failure。
+- [x] 能解釋 Worker／Connection Capacity，而非背誦設定值。
+- [x] Final Checklist 可用於陌生 Nginx Config。
 
 ## 進度落後時的優先順序
 
