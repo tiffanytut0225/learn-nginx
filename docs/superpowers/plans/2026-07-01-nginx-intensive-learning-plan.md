@@ -231,8 +231,8 @@ curl -i -H 'Host: unknown.local.test' http://127.0.0.1:8080/
 
 ### Hour 2：Blocking 與 Thread Pool
 
-- [ ] 盤點 File I/O、DNS、Upstream、Logging 與 Third-party Module 的 Blocking Risk。
-- [ ] 說明 Thread Pool 適用場景及不能解決的問題。
+- [x] 盤點 File I/O、DNS、Upstream、Logging 與 Third-party Module 的 Blocking Risk。
+- [x] 說明 Thread Pool 適用場景及不能解決的問題。
 
 ### Hour 3：Keepalive、Buffering 與 Compression
 
