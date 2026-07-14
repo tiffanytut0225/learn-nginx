@@ -241,9 +241,9 @@ curl -i -H 'Host: unknown.local.test' http://127.0.0.1:8080/
 
 ### Hour 4：Observability
 
-- [ ] 回答 H4-H7。
-- [ ] 設計包含 Request ID、Host、Status、Request Time、Upstream Address、Upstream Status、Connect/Header/Response Time 的 Log Format。
-- [ ] 避免記錄 Token、Cookie 或 Sensitive Query Data。
+- [x] 回答 H4-H7。
+- [x] 設計包含 Request ID、Host、Status、Request Time、Upstream Address、Upstream Status、Connect/Header/Response Time 的 Log Format。
+- [x] 避免記錄 Token、Cookie 或 Sensitive Query Data。
 
 ### Hour 5：小型行為測試
 

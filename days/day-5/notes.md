@@ -238,3 +238,74 @@ Compression 的 trade-off：
 #### Hour 3 狀態
 
 Hour 3 狀態：**完成**。已能以 Request Lifecycle 說明 Keepalive、Buffering 與 Compression 如何影響 CPU、Memory、Connections 與 Latency，並理解不能以單一「最佳值」取代量測。
+
+### Hour 4：Observability
+
+#### Request ID
+
+若要讓 Nginx log 可以跟 backend app log 串起來，最重要的是 Request ID：
+
+```text
+request_id=abc123
+```
+
+它讓同一個 request 可以在不同系統中被追蹤：
+
+- Nginx access log
+- Backend app log
+- Error log
+- Sentry / APM / tracing
+
+#### Reverse Proxy 必記欄位
+
+| 欄位 | 用途 |
+|---|---|
+| `$status` | Client 最後看到的 status。 |
+| `$upstream_status` | Upstream 回的 status；retry 多台 upstream 時可能有多個值。 |
+| `$upstream_addr` | Nginx 實際連到哪個 upstream。 |
+| `$request_time` | Nginx 處理整個 client request 的總時間。 |
+| `$upstream_connect_time` | 連 upstream 花多久。 |
+| `$upstream_header_time` | 等 upstream response header 花多久。 |
+| `$upstream_response_time` | Upstream response 整體花多久。 |
+
+`$request_time` 與 `$upstream_response_time` 不一定一樣：
+
+```text
+request_time 高、upstream_response_time 也高 -> backend/upstream 慢
+request_time 高、upstream_response_time 不高 -> 可能是 slow client、大 response、buffering 或傳輸問題
+```
+
+#### 避免記錄敏感資料
+
+不要直接記錄完整：
+
+- Cookie
+- Authorization header
+- access token / refresh token
+- password / code / session
+- 敏感 query string
+
+`$request_uri` 包含 query string，因此：
+
+```text
+/api/users?token=secret123
+```
+
+若直接記錄 `$request_uri`，token 會進 access log。Production log 應優先考慮 `$uri`，或建立 query masking 策略。
+
+#### Log Format Design
+
+完整設計：[Reverse Proxy Log Format Design](labs/hour-4/log-format-design.md)。
+
+學習者回答：「能追溯 request 並追到 backend app。」完整化後：
+
+```text
+好的 reverse proxy log 要能用 request_id 追一條 request，
+知道 client 最後看到什麼、Nginx proxy 到哪台 upstream、
+upstream 回什麼、各階段花多久，
+同時避免把 token/cookie/敏感 query 寫進 log。
+```
+
+#### Hour 4 狀態
+
+Hour 4 狀態：**完成**。已設計包含 Request ID、Host、Status、Request Time、Upstream Address、Upstream Status、Connect/Header/Response Time 的 log format，並記錄避免 Token、Cookie 與 Sensitive Query Data 的原則。
