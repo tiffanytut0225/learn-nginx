@@ -12,13 +12,15 @@
 - [Day 1 Fault Log](labs/hour-7/fault-log.md)
 - [Day 1 總驗收](day-1-assessment.md)
 
+本日教材已完成 Request Lifecycle、Event-driven Model、Master/Worker、Config Context、Server Selection、Reload、Logs 與 Fault Injection 的概念、實驗與驗收。
+
 ## 8 小時進度
 
-1. Client 到 Nginx
-2. Event-driven Concurrency
-3. Process Model
-4. Config Context
-5. Server Selection
-6. Validation、Reload 與 Logs
-7. Fault Injection
-8. 驗收
+1. Client 到 Nginx ✅
+2. Event-driven Concurrency ✅
+3. Process Model ✅
+4. Config Context ✅
+5. Server Selection ✅
+6. Validation、Reload 與 Logs ✅
+7. Fault Injection ✅
+8. 驗收 ✅

@@ -12,15 +12,15 @@
 - [Hour 8：Fault Log](labs/hour-8/fault-log.md)
 - [Day 2 總驗收](day-2-assessment.md)
 
-本日教材會隨學習進度放在此目錄。
+本日教材已完成 Location Algorithm、Prediction Matrix、`root`／`alias`、SPA、Rewrite、Static Delivery 與 Fault Diagnosis 的概念、實驗與驗收。
 
 ## 8 小時進度
 
-1. Location Algorithm
-2. Prediction Matrix
-3. Location Lab
-4. `root`、`alias` 與 Filesystem Path
-5. SPA 與 `try_files`
-6. Rewrite 與 Internal Redirect
-7. Static Delivery
-8. 攻錯與驗收
+1. Location Algorithm ✅
+2. Prediction Matrix ✅
+3. Location Lab ✅
+4. `root`、`alias` 與 Filesystem Path ✅
+5. SPA 與 `try_files` ✅
+6. Rewrite 與 Internal Redirect ✅
+7. Static Delivery ✅
+8. 攻錯與驗收 ✅
