@@ -6,6 +6,7 @@
 - [Hour 1：Capacity Worksheet](labs/hour-1/capacity-worksheet.md)
 - [Hour 4：Reverse Proxy Log Format Design](labs/hour-4/log-format-design.md)
 - [Hour 5：Short-lived vs Keepalive Lab](labs/hour-5/keepalive-behavior-experiment.md)
+- [Hour 6：Graceful Operations Lab](labs/hour-6/graceful-operations-experiment.md)
 
 本日教材會隨學習進度放在此目錄。
 

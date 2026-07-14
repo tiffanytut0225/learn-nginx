@@ -344,3 +344,60 @@ Port 數字會依環境改變；判讀重點是「多個不同 ports」與「同
 #### Hour 5 狀態
 
 Hour 5 狀態：**完成**。已比較 Short-lived 與 Keepalive Requests，記錄指令、環境限制與行為觀察，並明確註明此結果不是 Production Benchmark。
+
+### Hour 6：Graceful Operations
+
+#### 安全變更流程
+
+```text
+修改 config
+-> nginx -t
+-> test 成功才 graceful reload
+-> response / header 驗證
+-> 必要時 rollback config
+```
+
+`nginx -t` 的價值是讓 invalid config 在 reload 前被擋下。本 Lab 中 invalid config `nginx -t` 失敗後，服務仍繼續使用 v1 回應。
+
+#### Graceful Reload
+
+Graceful reload 不是粗暴中斷服務。心智模型：
+
+```text
+master 收到 reload signal
+-> 驗證並載入新 config
+-> 啟動新 workers
+-> 新 workers 接新連線
+-> 舊 workers 處理完既有連線後退出
+```
+
+#### Actual Result Lab
+
+完整 Lab：[Graceful Operations](labs/hour-6/graceful-operations-experiment.md)。
+
+```text
+Result: 11/11 graceful operation checks passed.
+```
+
+Lab 驗證：
+
+- 初始 v1 正常回應。
+- invalid config 被 `nginx -t` 擋下，沒有 reload。
+- v2 config 通過 `nginx -t` 後 graceful reload 成功。
+- reload 前後 master PID 維持穩定，代表不是重啟整個 master process。
+- rollback 到 v1 config 通過 `nginx -t` 後 reload 成功。
+- `nginx -s quit` graceful shutdown 後 container 停止。
+
+#### Rollback Check
+
+安全變更時，rollback 不是「心裡知道可以退」，而是要有可執行檢查：
+
+```text
+保留上一版 config
+rollback config 也要 nginx -t
+reload 後用 response/header/log 驗證已回到上一版
+```
+
+#### Hour 6 狀態
+
+Hour 6 狀態：**完成**。已練習 Config Test、Graceful Reload、Rollback Reload，並寫出安全變更步驟與 rollback check。

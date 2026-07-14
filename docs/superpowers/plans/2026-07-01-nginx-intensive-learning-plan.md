@@ -253,9 +253,9 @@ curl -i -H 'Host: unknown.local.test' http://127.0.0.1:8080/
 
 ### Hour 6：Graceful Operations
 
-- [ ] 練習 Config Test、Graceful Reload、Graceful Shutdown。
-- [ ] 觀察 Existing Connections 與 Worker Process 變化。
-- [ ] 寫出安全變更步驟與 Rollback Check。
+- [x] 練習 Config Test、Graceful Reload、Graceful Shutdown。
+- [x] 觀察 Existing Connections 與 Worker Process 變化。
+- [x] 寫出安全變更步驟與 Rollback Check。
 
 ### Hour 7：完整 Config Attack Review
 
