@@ -1,0 +1,20 @@
+providers:
+  kubernetesGateway:
+    enabled: true
+
+gateway:
+  enabled: true
+  listeners:
+    web:
+      port: 8000
+      protocol: HTTP
+      namespacePolicy:
+        from: All
+    websecure:
+      hostname: gateway.local.test
+      port: 8443
+      protocol: HTTPS
+      certificateRefs:
+        - name: gateway-local-tls
+      namespacePolicy:
+        from: All

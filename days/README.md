@@ -8,6 +8,10 @@
 | Day 4 | HTTPS、Domain/IP 與安全 | [查看 Day 4](day-4/README.md) |
 | Day 5 | 併發、效能、Observability 與總攻錯 | [查看 Day 5](day-5/README.md) |
 
+特別章節：
+
+- [在 K3s／Kubernetes 部署 Nginx](../special-topics/k3s-kubernetes/README.md)：Deployment、Service、Ingress、Service DNS、TLS 與分層故障診斷。
+
 全域參考：
 
 - [分級問題清單](../docs/ai-question-list.md)

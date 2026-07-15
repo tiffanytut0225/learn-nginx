@@ -22,6 +22,8 @@
 | Day 4 | HTTPS、Domain/IP 與安全 | 完整教材 | [查看 Day 4](days/day-4/README.md) |
 | Day 5 | 併發、效能、Observability 與總攻錯 | 完整教材 | [查看 Day 5](days/day-5/README.md) |
 
+五日主線完成後，可繼續閱讀[特別章節：在 K3s／Kubernetes 部署 Nginx](special-topics/k3s-kubernetes/README.md)，把 Reverse Proxy、Service Discovery、TLS 與分層攻錯套用到叢集環境。
+
 ## 使用前準備
 
 建議先安裝並確認以下工具可用：
@@ -108,6 +110,8 @@ learn-ngnix/
 │   ├── day-3/                    # 已完成的筆記、Labs 與驗收
 │   ├── day-4/                    # 已完成的筆記、Labs 與驗收
 │   └── day-5/                    # 已完成的筆記、Labs 與驗收
+├── special-topics/
+│   └── k3s-kubernetes/           # K3s／Kubernetes 部署特別章節
 └── docs/
     ├── ai-question-list.md        # 依難度與主題整理的問題
     └── superpowers/
@@ -128,6 +132,7 @@ learn-ngnix/
 - [Day 4 總驗收](days/day-4/day-4-assessment.md)
 - [Day 5 學習筆記](days/day-5/notes.md)
 - [Day 5 總驗收](days/day-5/day-5-assessment.md)
+- [特別章節：在 K3s／Kubernetes 部署 Nginx](special-topics/k3s-kubernetes/README.md)
 - [Nginx Config Review Checklist](docs/nginx-review-checklist.md)
 - [Nginx 密集學習方案設計](docs/superpowers/specs/2026-07-01-nginx-intensive-learning-design.md)
 - [README 文件設計](docs/superpowers/specs/2026-07-02-project-readme-design.md)
